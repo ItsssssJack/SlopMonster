@@ -1,9 +1,9 @@
 ---
-name: deslop
-description: Turn AI-written copy into copy a human would ship. Lint for AI tells, rewrite, cleanse with a rival model, lint again. Trigger on /deslop, "humanize this", "de-slop this", "does this sound like AI", "fix this copy".
+name: slopmonster
+description: Turn AI-written copy into copy a human would ship. Lint for AI tells, rewrite, cleanse with a rival model, lint again. Trigger on /slopmonster, "humanize this", "de-slop this", "does this sound like AI", "fix this copy".
 ---
 
-# deslop
+# SlopMonster
 
 Take any draft — a landing page, a README, an email, a script — and make it read like a
 person wrote it. Not "passes a detector". Detectors are noise, and chasing them makes prose

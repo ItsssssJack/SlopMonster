@@ -1,4 +1,4 @@
-# deslop
+# SlopMonster
 
 **Turn AI-written copy into copy a human would ship.**
 
@@ -39,7 +39,7 @@ Two other category leaders scored 2/5 and 3/5 the same day. The bar is low. Clea
 ## Quick start
 
 ```bash
-git clone https://github.com/ItsssssJack/deslop && cd deslop
+git clone https://github.com/ItsssssJack/SlopMonster && cd SlopMonster
 
 # score anything
 python3 tools/deslop.py --text "It's not just a tool, it's a game-changing journey."
@@ -58,7 +58,7 @@ No dependencies. The linter is stdlib Python. The cleanse script needs one AI CL
 
 ### Install as an agent skill
 
-**Claude Code:** copy this folder to `~/.claude/skills/deslop/`, then say `/deslop` or
+**Claude Code:** copy this folder to `~/.claude/skills/slopmonster/`, then say `/slopmonster` or
 "de-slop this". **Codex / other agents:** point the agent at `SKILL.md` — it is
 plain-markdown instructions, nothing Claude-specific.
 
