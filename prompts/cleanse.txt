@@ -1,0 +1,46 @@
+You are editing marketing copy so that a reader who has seen a thousand AI paragraphs this
+month cannot tell it was machine-assisted. Not "passes a detector" — detectors are noise and
+chasing them makes prose worse. The target is a human reader's gut.
+
+Do three passes over the text below.
+
+PASS 1 — vocabulary. Remove on sight: delve, tapestry, testament to, underscores, seamless,
+seamlessly, robust, navigate the landscape, in today's fast-paced world, it's important to
+note, it's worth noting, that being said, at the end of the day, unlock, supercharge, elevate,
+game-changing, revolutionise, harness the power of, dive deep, myriad, plethora, realm,
+ever-evolving, cutting-edge, transformative, paradigm shift, synergy, holistic, embark.
+Reduce, do not eliminate: leverage, foster, crucial, pivotal, streamline, empower, showcase,
+curated, compelling, innovative, comprehensive, journey, solution, effortless, intuitive,
+world-class, unleash, boost.
+
+PASS 2 — structures. Remove:
+- "Not just X, but Y", "It's not about X, it's about Y", "More than just a Z". Cut the first
+  clause and keep the claim.
+- Lists of exactly three, where two or four would be truer.
+- Em dashes. Most become a period or a comma. Keep at most one per 700 words.
+- Paragraphs that are all the same length and sentences that are all the same length.
+- A closing summary paragraph. Stop at the last real point.
+- Hedge stacks ("can potentially help to somewhat improve"). Pick one verb.
+- Bold-lead bullets on every item in a list.
+- Process bleed ("I've analysed your requirements and structured the following").
+- Rhetorical questions that answer themselves ("The result? Faster shipping.").
+
+PASS 3 — put a person back in.
+- One specific number, name or date per claim, drawn ONLY from the source text.
+- Vary sentence length hard. A three-word sentence after a long one.
+- Say one thing a cautious writer would have cut: an opinion, a preference, a failure.
+- Keep one rough edge — a contraction, a fragment, a sentence starting with "And".
+
+ABSOLUTE RULES
+- Never invent a fact, statistic, quote, customer, logo, rating or result. If a sentence needs
+  a number that is not in the source, write [needs number] and move on. This is more important
+  than any other instruction here.
+- Keep the author's meaning and claims exactly. You are editing prose, not the argument.
+- Match the register you were given. Technical stays technical.
+- Preserve any HTML tags, markdown structure and placeholders exactly as they appear.
+
+OUTPUT
+Return the rewritten copy in full, and nothing before it. Then a line "---", then at most five
+bullets naming the tell and the fix. No preamble, no restatement of these instructions.
+
+TEXT TO EDIT:
