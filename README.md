@@ -9,7 +9,7 @@ by a **rival model** — because a model cannot hear its own accent.
 Built for landing pages, READMEs, emails, scripts — anything a human is going to read
 and judge.
 
-![The copy system](docs/img/copy-system.png)
+![Where it comes from](docs/img/where-it-comes-from.png)
 
 ## The loop
 
@@ -82,6 +82,8 @@ capable of adding new ones while it does.
 Five groups, one point each. Full catalogue with fixes:
 [`references/signs-of-ai-writing.md`](references/signs-of-ai-writing.md).
 
+![Signs of AI writing — caught on a real build](docs/img/ridgeline-signs.png)
+
 1. **AI vocabulary** — `delve`, `seamless`, `robust`, `unlock`, `elevate`, `leverage`,
    `journey`, `realm`… ~65 words in two tiers.
 2. **AI constructions** — "not just X, but Y" (the single loudest tell in English right
@@ -108,7 +110,7 @@ headline's before → after, the six tells caught in first drafts, and the verif
 pass on every number. This is the file that teaches:
 [`examples/ridgeline-roofing.md`](examples/ridgeline-roofing.md).
 
-![Every line, before and after](docs/img/before-after.png)
+![Every line, before and after](docs/img/ridgeline-before-after.png)
 
 > ~~The area's most trusted roofing experts.~~
 > **Roofing, and only roofing, since 2001.**
