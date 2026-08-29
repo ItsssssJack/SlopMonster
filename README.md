@@ -39,7 +39,7 @@ Two other category leaders scored 2/5 and 3/5 the same day. The bar is low. Clea
 ## Quick start
 
 ```bash
-git clone https://github.com/YOURNAME/deslop && cd deslop
+git clone https://github.com/ItsssssJack/deslop && cd deslop
 
 # score anything
 python3 tools/deslop.py --text "It's not just a tool, it's a game-changing journey."
