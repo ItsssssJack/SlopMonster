@@ -22,9 +22,9 @@ $ python3 tools/deslop.py --text "…seven sentences from the live page…"
   score 3/5  needs a cleanse
 ```
 
-The full homepage scored **2/5** (add an em-dash pile-up and more vocabulary hits).
-Two other leaders in the same category scored 2/5 and 3/5 the same day. The bar in most
-categories is genuinely this low.
+These seven sentences are the scored sample; the full homepage fetch, which includes nav
+and menu strings, scored 2/5. Only the 3/5 above is reproducible from the text in this
+file, so 3/5 is the number the README quotes.
 
 ## The original
 

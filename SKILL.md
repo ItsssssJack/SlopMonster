@@ -25,12 +25,19 @@ because the linter is honest and the model is persuasive.
 python3 tools/deslop.py page.html              # a built page (scores visible text only)
 python3 tools/deslop.py page.html --view hero  # one element by id
 python3 tools/deslop.py --text "paste a draft"
+python3 tools/deslop.py page.html --allow-proof  # numbers are real and evidenced
 ```
 
 Regex, no opinions. Five groups, one point each: AI vocabulary, AI constructions,
 punctuation cadence, rule-of-three rhythm, invented proof. Below 5/5 it exits non-zero, so
 it works as a build gate. "Mostly clean" is how a page ends up sounding like every other
 AI page on the internet.
+
+Empty input fails rather than passing. A cleanse that times out leaves a zero-byte file,
+and a gate that stamps that CLEAN reports slop as clean exactly when the pipeline broke.
+
+Touching a regex means running `python3 tools/test_deslop.py`. The catalogue is matched by
+word root, and the obvious stemming shortcut silently kills a dozen base words.
 
 ## Step 2 — Rewrite (three passes)
 

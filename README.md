@@ -26,15 +26,16 @@ the internet.
 
 ## Receipts, not claims
 
-A real run on the live homepage copy of a major AI marketing SaaS (Aug 2026):
+A real run on seven verbatim sentences of Jasper.ai's live homepage (29 Aug 2026):
 
 | | score |
 |---|---|
-| Their live page, as fetched | **2/5** — `unlock`, `empower`, `leverage`, an em-dash pile-up, 18 rule-of-three lists |
+| Their copy, as fetched | **3/5** — `unlock`, `empower`, four rule-of-three lists |
 | After one pass through this loop | **5/5** — meaning intact, length within 10%, nothing invented |
 
-Full unedited transcript: [`examples/jasper-live-run.md`](examples/jasper-live-run.md).
-Two other category leaders scored 2/5 and 3/5 the same day. The bar is low. Clear it.
+Every command and its exact output: [`examples/jasper-live-run.md`](examples/jasper-live-run.md).
+Their copy is quoted for criticism and remains theirs; the MIT licence below covers this
+repo's own code and prose.
 
 ## Quick start
 
@@ -51,10 +52,17 @@ python3 tools/deslop.py index.html
 # cleanse a draft with a rival model, then re-score
 tools/cleanse.sh draft.md > cleansed.md
 python3 tools/deslop.py --text "$(cat cleansed.md)"
+
+# your numbers are real and you can evidence them? stop the proof rule blocking the build
+python3 tools/deslop.py index.html --allow-proof
+
+# changed a regex? this is what catches a silently half-blind catalogue
+python3 tools/test_deslop.py
 ```
 
 No dependencies. The linter is stdlib Python. The cleanse script needs one AI CLI
-(`codex` or `claude`) — or neither, in which case it prints the prompt for you to paste.
+(`codex` or `claude`), or neither, in which case it prints the prompt for you to paste.
+`.github/workflows/slop.yml` is the build gate, ready to copy into your own repo.
 
 ### Install as an agent skill
 
@@ -70,9 +78,12 @@ draft. Different families have different accents, and a model is poor at hearing
 | You work in | Draft's accent | `cleanse.sh` does |
 |---|---|---|
 | Claude Code | Anthropic | calls **GPT-5.6** via your `codex` CLI, time-bound, read-only sandbox |
-| Codex / ChatGPT | OpenAI | you don't need the script — or it calls **Claude** via `claude -p` (`DESLOP_WRITER=gpt`) |
-| Gemini CLI | Google | whichever of the two CLIs is installed |
-| nothing installed | — | prints the full prompt to paste into the other family's chat |
+| Codex / ChatGPT | OpenAI | set `DESLOP_WRITER=gpt` and it calls **Claude** via `claude -p` |
+| Gemini CLI | Google | whichever rival CLI is installed |
+| no rival CLI | n/a | prints the full prompt to paste into the other family's chat |
+
+It refuses to route a draft back to its own family. A model marking its own homework is
+the one thing this step exists to prevent.
 
 Then it re-lints, always: a frontier model is very good at removing tells and quite
 capable of adding new ones while it does.
@@ -85,14 +96,19 @@ Five groups, one point each. Full catalogue with fixes:
 ![Signs of AI writing — caught on a real build](docs/img/ridgeline-signs.png)
 
 1. **AI vocabulary** — `delve`, `seamless`, `robust`, `unlock`, `elevate`, `leverage`,
-   `journey`, `realm`… ~65 words in two tiers.
+   `journey`, `realm`… two tiers, matched by root, so `elevates` and `elevating` fire too.
+   Words with an ordinary literal sense (`crafted`, `harness`, `landscape`) are matched
+   exactly instead, so "we craft furniture by hand" stays clean.
 2. **AI constructions** — "not just X, but Y" (the single loudest tell in English right
-   now), "that's where X comes in", "say goodbye to", hedge stacks… 8 shapes.
+   now), "that's where X comes in", "say goodbye to", hedge stacks, throat-clearing
+   openers, self-answering questions… 17 shapes, contracted and uncontracted.
 3. **Punctuation cadence** — two em-dashes in one sentence, semicolons in web copy.
 4. **Rule-of-three rhythm** — *faster, smarter, and better.* One tricolon is rhetoric;
    three on a page is a machine.
 5. **Invented proof** — number-plus-noun patterns ("10,000+ happy users"). Deliberately
    noisy: a false positive costs ten seconds, a false negative is a claim you cannot back.
+   It sees a number beside a noun, not whether you can evidence it, so a true claim you
+   can defend passes with `--allow-proof` — the hits still print.
 
 ## What goes in the tells' place
 
@@ -126,13 +142,17 @@ one mistake with no route back.
 And this skill will never claim to "beat AI detectors". Detectors are noise. The target
 is a human reader's gut.
 
+Before you try it: this README scores 0/5 on its own linter, because it quotes every tell
+it documents. `delve`, "not just X, but Y" and "10,000+ happy users" are all on this page
+on purpose. Run it on your copy, not on the catalogue describing your copy.
+
 ## What this is built on
 
 All sources named in [`references/sources.md`](references/sources.md):
 Wikipedia's *Signs of AI writing* (WikiProject AI Cleanup) as the canonical catalogue,
-plus four MIT-licensed open-source humanizers — `blader/humanizer`,
-`harshaneel/humanize`, `lguz/humanize-writing-skill`, `haidrrrry/humanize-ai-writing` —
-and the copywriting principles of Krug, Priestley and Hormozi. Detector-bypass repos are
+plus four MIT-licensed open-source humanizers: `blader/humanizer`,
+`harshaneel/humanize`, `lguz/humanize-writing-skill`, `haidrrrry/humanize-ai-writing`.
+The rewrite principles come from Krug, Priestley and Hormozi. Detector-bypass repos are
 deliberately excluded.
 
 ## Repo map
@@ -140,7 +160,9 @@ deliberately excluded.
 ```
 SKILL.md                            the agent skill — the whole loop as instructions
 tools/deslop.py                     the linter. stdlib, no deps, exits red below 5/5
+tools/test_deslop.py                regression suite. run it after touching any regex
 tools/cleanse.sh                    rival-model cleanse, auto-routed, time-bound
+.github/workflows/slop.yml          the build gate, ready to copy
 prompts/cleanse.txt                 the exact instruction the cleanse model gets
 references/signs-of-ai-writing.md   the full catalogue: 2 vocab tiers, 8 shapes, cadence, rhythm, proof
 references/principles.md            the five rewrite principles, each with a real pair

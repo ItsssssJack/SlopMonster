@@ -1,0 +1,22 @@
+name: slop gate
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # The catalogue is regexes, so the regression suite is the only thing
+      # standing between a tweak and a silently half-blind linter.
+      - name: Regression tests
+        run: python3 tools/test_deslop.py
+
+      # This is the gate itself, copied as-is into your own repo: point it at
+      # whatever file holds your shipped copy. Non-zero below 5/5 fails the build.
+      - name: Lint the shipped copy
+        run: python3 tools/deslop.py --text "$(cat examples/gate-sample.txt)"
