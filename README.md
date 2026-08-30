@@ -1,6 +1,6 @@
 # SlopMonster
 
-![SlopMonster — five ways your writing sounds like AI, scored out of five](docs/img/hero.png)
+![The five SlopMonster mascots in a line-up, one for each rule the linter scores](docs/img/hero.png)
 
 **Turn AI-written copy into copy a human would ship.**
 
