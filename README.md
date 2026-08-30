@@ -1,5 +1,7 @@
 # SlopMonster
 
+![SlopMonster — five ways your writing sounds like AI, scored out of five](docs/img/hero.png)
+
 **Turn AI-written copy into copy a human would ship.**
 
 Every serious humanizer is built on the same public research. This one adds the two
@@ -95,20 +97,34 @@ Five groups, one point each. Full catalogue with fixes:
 
 ![Signs of AI writing — caught on a real build](docs/img/ridgeline-signs.png)
 
-1. **AI vocabulary** — `delve`, `seamless`, `robust`, `unlock`, `elevate`, `leverage`,
-   `journey`, `realm`… two tiers, matched by root, so `elevates` and `elevating` fire too.
-   Words with an ordinary literal sense (`crafted`, `harness`, `landscape`) are matched
-   exactly instead, so "we craft furniture by hand" stays clean.
-2. **AI constructions** — "not just X, but Y" (the single loudest tell in English right
-   now), "that's where X comes in", "say goodbye to", hedge stacks, throat-clearing
-   openers, self-answering questions… 17 shapes, contracted and uncontracted.
-3. **Punctuation cadence** — two em-dashes in one sentence, semicolons in web copy.
-4. **Rule-of-three rhythm** — *faster, smarter, and better.* One tricolon is rhetoric;
-   three on a page is a machine.
-5. **Invented proof** — number-plus-noun patterns ("10,000+ happy users"). Deliberately
-   noisy: a false positive costs ten seconds, a false negative is a claim you cannot back.
-   It sees a number beside a noun, not whether you can evidence it, so a true claim you
-   can defend passes with `--allow-proof` — the hits still print.
+![Rule 1, AI vocabulary: delve, leverage, seamless, unlock. Matched by word root.](docs/img/rule-1-vocab.png)
+
+**1. AI vocabulary.** `delve`, `seamless`, `robust`, `unlock`, `elevate`, `leverage`,
+`journey`, `realm`… two tiers, matched by root, so `elevates` and `elevating` fire too.
+Words with an ordinary literal sense (`crafted`, `harness`, `landscape`) are matched
+exactly instead, so "we craft furniture by hand" stays clean.
+
+![Rule 2, AI constructions: "It's not just a tool, it's a journey." Sentence shapes, not words.](docs/img/rule-2-phrases.png)
+
+**2. AI constructions.** "not just X, but Y" (the single loudest tell in English right
+now), "that's where X comes in", "say goodbye to", hedge stacks, throat-clearing
+openers, self-answering questions… 17 shapes, contracted and uncontracted.
+
+![Rule 3, punctuation cadence: two em dashes in one sentence, plus semicolons.](docs/img/rule-3-punctuation.png)
+
+**3. Punctuation cadence.** Two em-dashes in one sentence, semicolons in web copy.
+
+![Rule 4, rule-of-three rhythm: "faster, smarter, and better". Deliberately narrow.](docs/img/rule-4-rhythm.png)
+
+**4. Rule-of-three rhythm.** *faster, smarter, and better.* One tricolon is rhetoric;
+three on a page is a machine.
+
+![Rule 5, invented proof: "10,000+ happy customers". Never invent proof.](docs/img/rule-5-proof.png)
+
+**5. Invented proof.** Number-plus-noun patterns ("10,000+ happy users"). Deliberately
+noisy: a false positive costs ten seconds, a false negative is a claim you cannot back.
+It sees a number beside a noun, not whether you can evidence it, so a true claim you
+can defend passes with `--allow-proof` — the hits still print.
 
 ## What goes in the tells' place
 
