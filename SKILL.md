@@ -47,8 +47,8 @@ Full catalogue in `references/signs-of-ai-writing.md`. The short version:
    `leverage`, `game-changing`, `journey`, `realm`… Replace with a plainer word, not a
    synonym of the same word.
 2. **Kill the shapes.** `not just X, but Y` is the single loudest tell in English right
-   now. Also: rule-of-three everywhere, em-dash pile-ups, hedge stacks, symmetrical
-   paragraphs, the closing summary nobody asked for, bold-lead bullets on every item.
+   now. Also the `rule-of-three` reflex, `em-dash` pile-ups, hedge stacks, symmetrical
+   paragraphs, the closing summary nobody asked for, and a bold lead on every bullet.
 3. **Put a person back in.** Removing tells leaves clean, dead copy. One specific number
    per claim. Sentence lengths that vary hard. One thing a cautious writer would have cut.
    One rough edge — a contraction, a fragment, a sentence starting with "And".
