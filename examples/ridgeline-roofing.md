@@ -12,15 +12,15 @@ Every one of these showed up in a first draft of the page and was rewritten on s
 > **Six nails per shingle, every shingle.**
 > Three adjectives is a rhythm, not an argument. One specification beats it every time.
 
-**"Not just X, but Y"**
+**The `not just X, but Y` shape**
 > ~~Not just a roof, but peace of mind.~~
 > **A written scope and a fixed number before anyone climbs a ladder.**
 > The construction promises a reveal and then delivers an abstraction.
 
-**Elevated verbs**
+**Puffed-up verbs**
 > ~~We leverage industry-leading materials to deliver unparalleled protection.~~
 > **We source materials from manufacturers who test for wind, hail and sun.**
-> Leverage, deliver, unparalleled, seamless, robust, elevate. All of them mean nothing and cost a line.
+> `leverage`, `deliver`, `unparalleled`, `seamless`, `robust`, `elevate`. All of them mean nothing and cost a line.
 
 **Empty superlatives**
 > ~~The area's most trusted roofing experts.~~

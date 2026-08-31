@@ -11,7 +11,8 @@ import sys
 import os
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from deslop import VOCAB, VOCAB_EXACT, audit, visible_text, _root_pattern
+from deslop import (VOCAB, VOCAB_EXACT, audit, visible_text, _root_pattern,
+                    markdown_prose, PROOF)
 
 fails = []
 
@@ -102,6 +103,55 @@ for ok in ('Six nails per shingle, every shingle.',
            'You get a written scope and a fixed number before anyone climbs a ladder.',
            'We do not do overlays. If the roof needs replacing, it gets stripped.'):
     check('clean copy stays clean', not groups(ok), f'{ok} -> {groups(ok)}')
+
+# ── markdown: a literal is not copy ─────────────────────────────────────────
+# Every strip below is paired with a case that must survive it, because the
+# fastest way to make a catalogue score 5/5 is to stop reading the catalogue.
+md = markdown_prose('Use `delve` here. See [the guide](u.md) for more.')
+check('inline code is not scored', 'delve' not in md, repr(md))
+check('link text survives', 'the guide' in md, repr(md))
+check('surrounding prose survives', 'for more' in md, repr(md))
+
+md = markdown_prose('> ~~Trusted, reliable and built to last.~~\n> **Six nails per shingle.**')
+check('struck specimen is not scored', 'rhythm' not in groups(md), repr(md))
+check('the shipped line survives', 'Six nails per shingle' in md, repr(md))
+
+md = markdown_prose('Intro.\n```\nleverage seamless unlock\n```\nOutro.')
+check('fenced block is not scored', not groups(md), repr(md))
+check('prose around the fence survives', 'Intro' in md and 'Outro' in md, repr(md))
+
+# Deleting a code span outright welds the clause into a false rule-of-three.
+md = markdown_prose('If a claim needs a number you do not have, write `[needs number]` and move on.')
+check('stripping code invents no tricolon', 'rhythm' not in groups(md), repr(md))
+
+# Two table rows are two lines of copy, not one sentence with a dash pile-up.
+md = markdown_prose('| a | **3/5** — one thing |\n| b | **5/5** — another thing |')
+check('table rows do not merge into one cadence', 'punctuation' not in groups(md), repr(md))
+
+# A heading must not run into the sentence beneath it.
+md = markdown_prose('## Receipts, not claims\nA real run on seven sentences.')
+check('heading does not weld to body', 'Receipts, not claims A real' not in md, repr(md))
+
+# Markdown handling strips markup only. Real slop in real prose still fails.
+md = markdown_prose('We leverage seamless, robust and cutting-edge tooling to empower teams.')
+check('markdown does not soften vocabulary', 'vocab' in groups(md), repr(md))
+md = markdown_prose('It is not just a tool, it is a journey.')
+check('markdown does not soften constructions', 'phrases' in groups(md), repr(md))
+
+md = markdown_prose('- Tier 1 — delete on sight\n- Tier 2 — usually cut')
+check('bullets do not merge into one cadence', 'punctuation' not in groups(md), repr(md))
+# but a genuine pile-up inside one bullet must still fire
+md = markdown_prose('- Our team — trained, certified and local — is ready to help.')
+check('dash pile-up inside a bullet still fires', 'punctuation' in groups(md), repr(md))
+
+# ── proof: a number and its noun live in one sentence ───────────────────────
+for hit in ('10,000+ happy users', '500 teams', '2,000 verified customers',
+            '3.5 million customers'):
+    check('real proof claim still caught', PROOF.search(hit), hit)
+for clean in ('"Don\'t Make Me Think", 2000. The reader decides in seconds.',
+              'Roofing, and only roofing, since 2001. Customers come back.',
+              'Version 2.0. Readers can skip it.'):
+    check('proof does not reach across a full stop', not PROOF.search(clean), clean)
 
 if fails:
     print(f'{len(fails)} FAILED\n')

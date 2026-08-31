@@ -51,6 +51,9 @@ python3 tools/deslop.py --text "It's not just a tool, it's a game-changing journ
 # score a built page (reads only what a visitor can SEE)
 python3 tools/deslop.py index.html
 
+# score a markdown file (skips code spans, fenced blocks and struck-through text)
+python3 tools/deslop.py README.md
+
 # cleanse a draft with a rival model, then re-score
 tools/cleanse.sh draft.md > cleansed.md
 python3 tools/deslop.py --text "$(cat cleansed.md)"
@@ -101,9 +104,9 @@ Every before and after below is a real line from the Ridgeline Roofing build. St
 through is what the first draft said. Bold is what shipped. The full record:
 [`examples/ridgeline-roofing.md`](examples/ridgeline-roofing.md).
 
-One warning before you run it on this file. **README.md scores 0/5**, and that is correct.
-This page quotes every tell it catches. The linter reads words, not quotation marks, and it
-has no idea you are giving an example. That is the trade for having no opinions.
+Every specimen on this page sits in `code formatting` or is struck through. That is not
+decoration. A literal is not copy, so `deslop.py` skips both when it reads a `.md` file,
+which is how this README passes the linter it documents.
 
 ![Signs of AI writing, caught on a real build](docs/img/ridgeline-signs.png)
 
@@ -115,8 +118,8 @@ There are two lists and they work differently.
 
 The first list is matched by root. So `elevate` also catches `elevates`, `elevated` and
 `elevating`. This matters more than it sounds. Sales pages are written in the third person.
-"Acme elevates your workflow" is the commonest form of the word, and exact matching walked
-straight past it.
+`Acme elevates your workflow` is the commonest form of the word, and exact matching
+walked straight past it.
 
 The second list holds words that have an honest everyday meaning too. `crafted`, `harness`,
 `landscape`, `journey`. Those are matched word for word instead. So "we craft furniture by
@@ -126,18 +129,18 @@ The fix is a plainer word. Not a posher synonym for the same idea.
 
 > ~~We leverage industry-leading materials to deliver unparalleled protection.~~
 > **We source materials from manufacturers who test for wind, hail and sun.**
-> Leverage, deliver, unparalleled. Every one of them means nothing and costs a line.
+> `leverage`, `deliver`, `unparalleled`. Every one of them means nothing and costs a line.
 
 ![Rule 2, AI constructions: "not just a tool, it's a journey"](docs/img/rule-2-phrases.png)
 
 **2. AI constructions.** This group catches sentence shapes, not single words.
 
-A shape is a pattern you can fill with anything. "Not just X, but Y" is the loudest one in
+A shape is a pattern you can fill with anything. `not just X, but Y` is the loudest one in
 English right now. Once you see it you cannot stop seeing it.
 
-There are 17 shapes in the list. Things like "that's where X comes in", "say goodbye to",
-"whether you're X or Y", stacked hedges such as "could potentially", and questions the
-writer then answers themselves.
+There are 17 shapes in the list. Things like `that's where X comes in`, `say goodbye to`
+and `whether you're X or Y`, stacked hedges such as `could potentially`, and questions
+the writer then answers themselves.
 
 Both the short and long forms are checked, "it's" and "it is". Formal register is not a
 clever disguise. It is the default thing a model writes.
@@ -170,7 +173,7 @@ page. Two semicolons in a long technical document is a style, not a tell.
 
 ![Rule 4, rule-of-three rhythm: "faster, smarter, and better"](docs/img/rule-4-rhythm.png)
 
-**4. Rule-of-three rhythm.** Three items in a row. "faster, smarter, and better."
+**4. Rule-of-three rhythm.** Three items in a row. `faster, smarter, and better`.
 
 Three adjectives is a rhythm, not an argument. One tricolon is rhetoric. Three of them on a
 page is a machine. A tricolon is just the posh name for a three-item list.
@@ -197,7 +200,7 @@ Clean copy that says nothing is still a dead page. Two things run here.
 
 **The hard rule: never invent proof.** No customer counts, no testimonials, no ratings the
 business has not earned. The linter flags any number sitting next to a people-noun, like
-"10,000+ happy users". It is deliberately trigger-happy. A false alarm costs you ten
+`10,000+ happy users`. It is deliberately trigger-happy. A false alarm costs you ten
 seconds. A miss puts a claim on your site that you cannot back. If your number is real and
 you can evidence it, `--allow-proof` drops it to a warning and still prints the hits.
 
@@ -267,9 +270,10 @@ one mistake with no route back.
 And this skill will never claim to "beat AI detectors". Detectors are noise. The target
 is a human reader's gut.
 
-Before you try it: this README scores 0/5 on its own linter, because it quotes every tell
-it documents. `delve`, "not just X, but Y" and "10,000+ happy users" are all on this page
-on purpose. Run it on your copy, not on the catalogue describing your copy.
+This file passes its own linter. `python3 tools/deslop.py README.md` scores **5/5**, and
+it is the same catalogue and the same regexes that score your landing page. Nothing was
+softened to get there. The specimens are marked as literals, in `code` or struck through,
+and the prose around them had to be written clean like anything else.
 
 ## What this is built on
 

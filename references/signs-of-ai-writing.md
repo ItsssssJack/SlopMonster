@@ -15,7 +15,7 @@ group. These five groups are exactly what `tools/deslop.py` scores.
 
 Words a model reaches for because they are the safest available token. Humans mostly do not.
 
-**Tier 1 — delete on sight:**
+**Tier 1, delete on sight:**
 `delve` · `tapestry` · `testament to` · `underscores` · `seamless(ly)` · `robust` ·
 `navigate the landscape` · `in today's fast-paced world` · `it's important to note` ·
 `it's worth noting` · `that being said` · `at the end of the day` · `unlock` ·
@@ -23,16 +23,16 @@ Words a model reaches for because they are the safest available token. Humans mo
 `dive deep` · `myriad` · `plethora` · `realm` · `ever-evolving` · `cutting-edge` ·
 `transformative` · `paradigm shift` · `synergy` · `holistic` · `embark`
 
-**Tier 2 — fine once, damning in every section:**
+**Tier 2, fine once and damning in every section:**
 `leverage` · `foster` · `crucial` · `pivotal` · `streamline` · `empower` · `showcase` ·
 `curated` · `meticulous` · `compelling` · `innovative` · `comprehensive` · `journey` ·
 `solution` · `effortless` · `intuitive` · `world-class` · `best-in-class` · `unleash` · `boost`
 
-On a marketing site the second tier does more damage than the first, because "streamline
-your workflow" is the exact sentence every competitor also shipped.
+On a marketing site the second tier does more damage than the first, because `streamline
+your workflow` is the exact sentence every competitor also shipped.
 
-The fix is a **plainer word, not a synonym**. "Leverage" does not become "utilise".
-It becomes "use".
+The fix is a **plainer word, not a synonym**. `leverage` does not become `utilise`.
+It becomes `use`.
 
 ## 2 · Constructions (the shapes)
 
@@ -40,21 +40,21 @@ Louder than any single word, because they are shapes rather than vocabulary:
 
 | Shape | Example | Fix |
 |---|---|---|
-| "not just X, but Y" | *It's not just a course, it's a journey* | Cut the first clause, keep the claim |
-| "more than just" | *More than just another app* | Same |
-| "whether you're X or Y" | *Whether you're a beginner or a pro…* | Name the one reader you mean |
-| "that's where X comes in" | *That's where Acme comes in* | State what X does |
-| "say goodbye to" | *Say goodbye to guesswork* | Name what replaces it |
-| "imagine a…" | *Imagine a world where…* | Show it instead |
-| hedged benefit | *helps you to*, *can help you* | One verb, committed |
-| stacked hedging | *may potentially*, *could possibly* | One hedge maximum, ideally zero |
-| self-answering question | *The result? Faster shipping.* | A sentence |
+| `not just X, but Y` | `It's not just a course, it's a journey` | Cut the first clause, keep the claim |
+| `more than just` | `More than just another app` | Same |
+| `whether you're X or Y` | `Whether you're a beginner or a pro…` | Name the one reader you mean |
+| `that's where X comes in` | `That's where Acme comes in` | State what X does |
+| `say goodbye to` | `Say goodbye to guesswork` | Name what replaces it |
+| `imagine a…` | `Imagine a world where…` | Show it instead |
+| hedged benefit | `helps you to`, `can help you` | One verb, committed |
+| stacked hedging | `may potentially`, `could possibly` | One hedge maximum, ideally zero |
+| self-answering question | `The result? Faster shipping.` | A sentence |
 
-**"It's not just X, it's Y" is the single loudest tell in English right now.** If you
+**`It's not just X, it's Y` is the single loudest tell in English right now.** If you
 fix one thing, fix that.
 
-Also in this group: the closing summary nobody asked for ("In conclusion…"), process
-bleed ("I've analysed your requirements and structured the following…"), bold-lead
+Also in this group: the closing summary nobody asked for (`In conclusion…`), process
+bleed (`I've analysed your requirements and structured the following…`), bold-lead
 bullets on every item, and symmetrical paragraphs — every paragraph three sentences,
 every sentence fifteen words. Humans write a nine-word paragraph and then a forty-word one.
 
@@ -68,7 +68,7 @@ every sentence fifteen words. Humans write a nine-word paragraph and then a fort
 
 ## 4 · Rhythm
 
-The rule-of-three reflex: *faster, smarter, and better*. One tricolon is rhetoric.
+The rule-of-three reflex: `faster, smarter, and better`. One tricolon is rhetoric.
 Three on a page is a machine. Real writers use two items, or four, or one.
 
 ## 5 · Invented proof
@@ -92,6 +92,6 @@ Removing tells leaves clean, dead copy. Put a person back in:
 - **Say one thing a model would not risk.** An opinion, a preference, a thing that
   failed. Safety is the texture of AI writing.
 - **Use the reader's actual words.** Mine reviews, tickets, comments. Nobody says
-  "streamline your workflow" out loud.
+  `streamline your workflow` out loud.
 - **Keep one rough edge.** A contraction, a fragment, a sentence starting with "And".
   One rough edge is texture. Five is sloppy.
