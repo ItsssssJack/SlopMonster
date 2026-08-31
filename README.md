@@ -92,64 +92,148 @@ capable of adding new ones while it does.
 
 ## What the linter hunts
 
-Five groups, one point each. Four of them strip the AI accent. The fifth asks whether the
-line sells anything. Full catalogue with fixes:
-[`references/signs-of-ai-writing.md`](references/signs-of-ai-writing.md).
+Five groups. Trip one and you lose a point. Below 5/5 the command exits red, so a build can
+stop on it.
 
-![Signs of AI writing — caught on a real build](docs/img/ridgeline-signs.png)
+Four groups strip the AI accent. The fifth asks whether the line sells anything.
 
-![Rule 1, AI vocabulary: delve, leverage, seamless, unlock. Matched by word root.](docs/img/rule-1-vocab.png)
+Every before and after below is a real line from the Ridgeline Roofing build. Struck
+through is what the first draft said. Bold is what shipped. The full record:
+[`examples/ridgeline-roofing.md`](examples/ridgeline-roofing.md).
 
-**1. AI vocabulary.** `delve`, `seamless`, `robust`, `unlock`, `elevate`, `leverage`,
-`journey`, `realm`… two tiers, matched by root, so `elevates` and `elevating` fire too.
-Words with an ordinary literal sense (`crafted`, `harness`, `landscape`) are matched
-exactly instead, so "we craft furniture by hand" stays clean.
+One warning before you run it on this file. **README.md scores 0/5**, and that is correct.
+This page quotes every tell it catches. The linter reads words, not quotation marks, and it
+has no idea you are giving an example. That is the trade for having no opinions.
 
-![Rule 2, AI constructions: "It's not just a tool, it's a journey." Sentence shapes, not words.](docs/img/rule-2-phrases.png)
+![Signs of AI writing, caught on a real build](docs/img/ridgeline-signs.png)
 
-**2. AI constructions.** "not just X, but Y" (the single loudest tell in English right
-now), "that's where X comes in", "say goodbye to", hedge stacks, throat-clearing
-openers, self-answering questions… 17 shapes, contracted and uncontracted.
+![Rule 1, AI vocabulary: delve, leverage, seamless, unlock](docs/img/rule-1-vocab.png)
 
-![Rule 3, punctuation cadence: two em dashes in one sentence, plus semicolons.](docs/img/rule-3-punctuation.png)
+**1. AI vocabulary.** Words that turn up far more in AI writing than in human writing.
 
-**3. Punctuation cadence.** Two em-dashes in one sentence, semicolons in web copy.
+There are two lists and they work differently.
 
-![Rule 4, rule-of-three rhythm: "faster, smarter, and better". Deliberately narrow.](docs/img/rule-4-rhythm.png)
+The first list is matched by root. So `elevate` also catches `elevates`, `elevated` and
+`elevating`. This matters more than it sounds. Sales pages are written in the third person.
+"Acme elevates your workflow" is the commonest form of the word, and exact matching walked
+straight past it.
 
-**4. Rule-of-three rhythm.** *faster, smarter, and better.* One tricolon is rhetoric;
-three on a page is a machine.
+The second list holds words that have an honest everyday meaning too. `crafted`, `harness`,
+`landscape`, `journey`. Those are matched word for word instead. So "we craft furniture by
+hand" stays clean, and only the marketing use gets caught.
+
+The fix is a plainer word. Not a posher synonym for the same idea.
+
+> ~~We leverage industry-leading materials to deliver unparalleled protection.~~
+> **We source materials from manufacturers who test for wind, hail and sun.**
+> Leverage, deliver, unparalleled. Every one of them means nothing and costs a line.
+
+![Rule 2, AI constructions: "not just a tool, it's a journey"](docs/img/rule-2-phrases.png)
+
+**2. AI constructions.** This group catches sentence shapes, not single words.
+
+A shape is a pattern you can fill with anything. "Not just X, but Y" is the loudest one in
+English right now. Once you see it you cannot stop seeing it.
+
+There are 17 shapes in the list. Things like "that's where X comes in", "say goodbye to",
+"whether you're X or Y", stacked hedges such as "could potentially", and questions the
+writer then answers themselves.
+
+Both the short and long forms are checked, "it's" and "it is". Formal register is not a
+clever disguise. It is the default thing a model writes.
+
+Shapes are worth more than words, because a page can pass a vocabulary check and still read
+like a machine wrote it.
+
+> ~~Not just a roof, but peace of mind.~~
+> **A written scope and a fixed number before anyone climbs a ladder.**
+> The shape promises a reveal, then hands you an abstraction.
+
+![Rule 3, punctuation cadence: two em dashes in one sentence](docs/img/rule-3-punctuation.png)
+
+**3. Punctuation cadence.** Two em dashes inside one sentence.
+
+One dash in a paragraph is punctuation. Three is a tic. Models reach for them at roughly
+three to five times the human rate.
+
+The check only looks inside a 220 character window, and that limit is doing real work.
+Interface text has no full stops. Nav items, buttons and labels all run together, so a
+naive sentence split treats a whole page as one sentence and the rule then fires on
+everything. A linter that cries wolf gets switched off, so the window stays.
+
+Semicolons are counted too, but only past a floor of three, scaled to the length of the
+page. Two semicolons in a long technical document is a style, not a tell.
+
+> ~~Our team — trained, certified and local — is ready to help.~~
+> **Thirty-eight on the crew, factory-trained for every material we install.**
+> The dashes were hiding the fact that the sentence had no information in it.
+
+![Rule 4, rule-of-three rhythm: "faster, smarter, and better"](docs/img/rule-4-rhythm.png)
+
+**4. Rule-of-three rhythm.** Three items in a row. "faster, smarter, and better."
+
+Three adjectives is a rhythm, not an argument. One tricolon is rhetoric. Three of them on a
+page is a machine. A tricolon is just the posh name for a three-item list.
+
+This check is deliberately narrow, and only two shapes fire it. With the Oxford comma it
+needs three single words. Without it, the third item has to be a short phrase that ends the
+clause.
+
+The narrowness is the point. "Inspection, repair and replacement for homes" is three real
+things a roofer does. Flagging that would be crying wolf, and the next person would turn
+the linter off.
+
+> ~~Trusted, reliable and built to last.~~
+> **Six nails per shingle, every shingle.**
+> One specification beats three adjectives every time. Nobody invents a line like that,
+> because invented copy does not know it.
 
 ![Rule 5, sales and marketing: the rewrite built on Krug, Priestley and Hormozi](docs/img/rule-5-conversion.png)
 
-**5. Sales & marketing.** The first four rules get the AI accent out. This one asks
-the harder question: does the line sell anything? Clean copy that says nothing is still a
-dead page. Two things run here.
+**5. Sales & marketing.** The first four rules get the robot out. This one asks the harder
+question. Does the line sell anything?
 
-*The hard rule — never invent proof.* The linter flags number-plus-noun patterns
-("10,000+ happy users"). Deliberately noisy: a false positive costs ten seconds, a false
-negative is a claim you cannot back. It sees a number beside a noun, not whether you can
-evidence it, so a true claim you can defend passes with `--allow-proof` — the hits still
-print. Fake proof is a conversion failure before it is a writing failure. Nobody buys from
-a page they have caught lying.
+Clean copy that says nothing is still a dead page. Two things run here.
 
-*The bar — the category benchmark.* Before rewriting a page, read the five best live
-pages in its category and quote their headlines verbatim. The bar is what the reader has
-already seen, not what sounds nice in isolation.
+**The hard rule: never invent proof.** No customer counts, no testimonials, no ratings the
+business has not earned. The linter flags any number sitting next to a people-noun, like
+"10,000+ happy users". It is deliberately trigger-happy. A false alarm costs you ten
+seconds. A miss puts a claim on your site that you cannot back. If your number is real and
+you can evidence it, `--allow-proof` drops it to a warning and still prints the hits.
 
-The rewrite runs on named work, not vibes:
+Fake proof is a sales failure before it is a writing failure. Nobody buys from a page they
+have caught lying.
+
+> ~~Loved by 10,000+ happy homeowners.~~
+> **Project names and photography are placeholders. Swap in your own jobs before this goes live.**
+> Say the slot is empty. It reads as confidence, not weakness.
+
+> ~~The area's most trusted roofing experts.~~
+> **Roofing, and only roofing, since 2001.**
+> "Most trusted" cannot be checked, so the reader discounts it. A date cannot be argued with.
+
+**Where the lines come from.** Four sources. If a sentence cannot name its source, it does
+not go on the page.
+
+1. **What the trade actually does.** The strongest source by a mile. "Six nails per
+   shingle" is a real specification with a real failure mode behind it.
+2. **What the customer already fears.** That the price will move. That the yard will be
+   wrecked. That they are being sold a whole roof for a flashing problem.
+3. **What the competition will not say.** Refusals travel further than promises. "We do not
+   do overlays" positions you and disqualifies the wrong customer in one line.
+4. **The lines that were already good.** "From first call to final nail" arrived written in
+   the wireframe and beat every rewrite. It stayed.
+
+**The named work behind the rewrite:**
 
 | Who | What this takes |
 |---|---|
 | **Steve Krug**, *Don't Make Me Think* (2000) | every line the reader has to decode is a line they skip |
-| **Daniel Priestley** — pitch order | open on the problem and the insight, never the product |
-| **Alex Hormozi** — the offer side | named pain, checkable specificity, proof you actually own |
+| **Daniel Priestley**, pitch order | open on the problem and the insight, never the product |
+| **Alex Hormozi**, the offer side | named pain, checkable specificity, proof you actually own |
 
-Those three plus the benchmark become five working principles, with a real before and
-after on each: [`references/principles.md`](references/principles.md).
-
-> **Before:** Committed to the highest standards of workmanship
-> **After:** We do not do overlays. If the roof needs replacing, it gets stripped.
+Those three plus the category benchmark become five working principles, each with a real
+before and after: [`references/principles.md`](references/principles.md).
 
 ## What goes in the tells' place
 
