@@ -120,9 +120,9 @@ openers, self-answering questions… 17 shapes, contracted and uncontracted.
 **4. Rule-of-three rhythm.** *faster, smarter, and better.* One tricolon is rhetoric;
 three on a page is a machine.
 
-![Rule 5, sales and marketing copy: "committed to the highest standards". What the page is actually for.](docs/img/rule-5-conversion.png)
+![Rule 5, sales and marketing: the rewrite built on Krug, Priestley and Hormozi](docs/img/rule-5-conversion.png)
 
-**5. Sales and marketing copy.** The first four rules get the AI accent out. This one asks
+**5. Sales & marketing.** The first four rules get the AI accent out. This one asks
 the harder question: does the line sell anything? Clean copy that says nothing is still a
 dead page. Two things run here.
 
