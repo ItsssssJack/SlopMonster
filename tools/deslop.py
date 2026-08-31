@@ -87,7 +87,11 @@ PHRASES = [
 # route back, so recall matters more than precision. If your number is real and
 # you can evidence it, pass --allow-proof and the rule drops to advisory.
 PROOF = re.compile(
-    r"([\d][\d,\.]*)\s*\+?\s*"
+    # Digits, thousands separators and a decimal point, but never a trailing
+    # full stop. Absorbing it let "Don't Make Me Think, 2000. The reader…" read
+    # as a proof claim, because the year swallowed the sentence break and then
+    # reached across it for a noun. A number and its noun live in one sentence.
+    r"([\d][\d,]*(?:\.\d+)?)\s*\+?\s*"
     r"((?:happy|early|active|satisfied|verified|trusted|delighted)\s+)?"
     r"(?:\w+\s+){0,1}"
     r"(users?|customers?|learners?|students?|teams?|members?|companies|businesses"
@@ -109,6 +113,42 @@ def visible_text(html):
     # of which match `cutting-edge` or a plain space. Curly apostrophe likewise.
     t = t.replace('‑', '-').replace('\xa0', ' ').replace('’', "'")
     return re.sub(r'\s+', ' ', t).strip()
+
+
+def markdown_prose(md):
+    """The prose of a Markdown file, with the specimens removed.
+
+    A literal is not copy. A README that documents `delve` has not shipped the
+    word, it has quoted it, and a linter that cannot tell the difference makes
+    every catalogue score zero. So four things come out before scoring:
+
+      fenced blocks   ```…```      commands and code, never prose
+      inline code     `delve`      the specimen being named
+      struck text     ~~before~~   the line being shown as wrong, on purpose
+      images          ![alt](src)  alt text is metadata, not body copy
+
+    Link text stays, because that is read as part of the sentence. Everything
+    else is scored exactly as before: this strips markup, it does not soften a
+    single rule.
+    """
+    md = re.sub(r'```.*?```', ' ', md, flags=re.S)
+    md = re.sub(r'!\[[^\]]*\]\([^)]*\)', ' . ', md)
+    md = re.sub(r'\[([^\]]*)\]\([^)]*\)', r'\1', md)
+    # Stand-ins, not deletions. Removing `[needs number]` outright welds
+    # "you do not have, write ... and move on" into a false rule-of-three, and
+    # a linter that invents a hit is worse than one that misses. Two letters
+    # keep the clause intact without ever matching a rule itself.
+    md = re.sub(r'`[^`]*`', ' it ', md)
+    md = re.sub(r'~~.*?~~', ' it ', md, flags=re.S)
+    # Headings, table cells and rows are separate copy, not one long sentence.
+    # Joined, two em-dashes from two table rows read as one machine cadence.
+    md = re.sub(r'^\s{0,3}#{1,6}\s*(.*)$', r' . \1 . ', md, flags=re.M)
+    md = re.sub(r'\|', ' . ', md)
+    # A bullet is its own line of copy. Left joined, two list items donate one
+    # em-dash each and read as a single machine cadence that nobody wrote.
+    md = re.sub(r'^\s*(?:[-*+]|\d+\.)\s+', ' . ', md, flags=re.M)
+    md = re.sub(r'[*_>]', ' ', md)
+    return re.sub(r'\s+', ' ', md).strip()
 
 
 def audit(text):
@@ -210,8 +250,18 @@ if __name__ == '__main__':
     allow_proof = '--allow-proof' in args
     args = [a for a in args if a != '--allow-proof']
 
+    as_md = '--markdown' in args
+    args = [a for a in args if a != '--markdown']
+
     if args[0] == '--text':
         text = ' '.join(args[1:])
+        if as_md:
+            text = markdown_prose(text)
+    elif args[0].endswith('.md') or as_md:
+        try:
+            text = markdown_prose(open(args[0]).read())
+        except (FileNotFoundError, IsADirectoryError, PermissionError) as e:
+            sys.exit(f'deslop: cannot read {args[0]}: {e.strerror}')
     else:
         try:
             html = open(args[0]).read()

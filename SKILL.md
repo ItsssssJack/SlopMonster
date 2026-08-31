@@ -5,8 +5,8 @@ description: Turn AI-written copy into copy a human would ship. Lint for AI tell
 
 # SlopMonster
 
-Take any draft — a landing page, a README, an email, a script — and make it read like a
-person wrote it. Not "passes a detector". Detectors are noise, and chasing them makes prose
+Take any draft and make it read like a person wrote it. A landing page, a README, an
+email, a script. The target is not "passes a detector". Detectors are noise, and chasing them makes prose
 worse. The target is the gut of a reader who has seen a thousand AI paragraphs this month.
 
 The loop is always the same four steps, and the linter gets the first and last word,
@@ -46,7 +46,7 @@ Full catalogue in `references/signs-of-ai-writing.md`. The short version:
 1. **Kill the vocabulary.** `delve`, `seamless`, `robust`, `unlock`, `elevate`,
    `leverage`, `game-changing`, `journey`, `realm`… Replace with a plainer word, not a
    synonym of the same word.
-2. **Kill the shapes.** "Not just X, but Y" is the single loudest tell in English right
+2. **Kill the shapes.** `not just X, but Y` is the single loudest tell in English right
    now. Also: rule-of-three everywhere, em-dash pile-ups, hedge stacks, symmetrical
    paragraphs, the closing summary nobody asked for, bold-lead bullets on every item.
 3. **Put a person back in.** Removing tells leaves clean, dead copy. One specific number
@@ -79,8 +79,8 @@ ones while it does. An unlinted cleanse is a coin flip.
 
 ## The one hard rule
 
-**Never invent proof.** No user counts, no testimonials, no ratings, no "trusted by
-10,000 teams" unless every one is true and you can show it. If a claim needs a number you
+**Never invent proof.** No user counts, no testimonials, no ratings, no `trusted by
+10,000 teams` unless every one is true and you can show it. If a claim needs a number you
 do not have, write `[needs number]` and move on. The linter flags number-plus-noun
 patterns on purpose: a false positive costs ten seconds, a false negative is a claim you
 cannot back. Specificity beats borrowed credibility anyway.

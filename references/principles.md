@@ -54,5 +54,5 @@ cannot buy, and it arms the reader to spot a bad competitor — a favour they re
 **Never invent proof.** No customer counts, no testimonials, no ratings the business has
 not earned. Where a build needs a proof slot it does not have, say so on the page:
 
-> **Before:** Loved by 10,000+ happy homeowners
+> **Before:** ~~Loved by 10,000+ happy homeowners~~
 > **After:** Project names and photography are placeholders — swap in your own jobs before this goes live.
