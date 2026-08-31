@@ -92,7 +92,8 @@ capable of adding new ones while it does.
 
 ## What the linter hunts
 
-Five groups, one point each. Full catalogue with fixes:
+Five groups, one point each. Four of them strip the AI accent. The fifth asks whether the
+line sells anything. Full catalogue with fixes:
 [`references/signs-of-ai-writing.md`](references/signs-of-ai-writing.md).
 
 ![Signs of AI writing — caught on a real build](docs/img/ridgeline-signs.png)
@@ -119,12 +120,36 @@ openers, self-answering questions… 17 shapes, contracted and uncontracted.
 **4. Rule-of-three rhythm.** *faster, smarter, and better.* One tricolon is rhetoric;
 three on a page is a machine.
 
-![Rule 5, invented proof: "10,000+ happy customers". Never invent proof.](docs/img/rule-5-proof.png)
+![Rule 5, sales and marketing copy: "committed to the highest standards". What the page is actually for.](docs/img/rule-5-conversion.png)
 
-**5. Invented proof.** Number-plus-noun patterns ("10,000+ happy users"). Deliberately
-noisy: a false positive costs ten seconds, a false negative is a claim you cannot back.
-It sees a number beside a noun, not whether you can evidence it, so a true claim you
-can defend passes with `--allow-proof` — the hits still print.
+**5. Sales and marketing copy.** The first four rules get the AI accent out. This one asks
+the harder question: does the line sell anything? Clean copy that says nothing is still a
+dead page. Two things run here.
+
+*The hard rule — never invent proof.* The linter flags number-plus-noun patterns
+("10,000+ happy users"). Deliberately noisy: a false positive costs ten seconds, a false
+negative is a claim you cannot back. It sees a number beside a noun, not whether you can
+evidence it, so a true claim you can defend passes with `--allow-proof` — the hits still
+print. Fake proof is a conversion failure before it is a writing failure. Nobody buys from
+a page they have caught lying.
+
+*The bar — the category benchmark.* Before rewriting a page, read the five best live
+pages in its category and quote their headlines verbatim. The bar is what the reader has
+already seen, not what sounds nice in isolation.
+
+The rewrite runs on named work, not vibes:
+
+| Who | What this takes |
+|---|---|
+| **Steve Krug**, *Don't Make Me Think* (2000) | every line the reader has to decode is a line they skip |
+| **Daniel Priestley** — pitch order | open on the problem and the insight, never the product |
+| **Alex Hormozi** — the offer side | named pain, checkable specificity, proof you actually own |
+
+Those three plus the benchmark become five working principles, with a real before and
+after on each: [`references/principles.md`](references/principles.md).
+
+> **Before:** Committed to the highest standards of workmanship
+> **After:** We do not do overlays. If the roof needs replacing, it gets stripped.
 
 ## What goes in the tells' place
 
