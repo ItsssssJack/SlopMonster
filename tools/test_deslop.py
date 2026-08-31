@@ -7,6 +7,7 @@ must-stay-clean case that would break if the rule got greedy.
 """
 import re
 import subprocess
+import tempfile
 import sys
 import os
 
@@ -96,6 +97,37 @@ r = subprocess.run([sys.executable, f'{here}/deslop.py', '/nope/missing.html'],
                    capture_output=True, text=True)
 check('missing file exits non-zero', r.returncode != 0, f'exit {r.returncode}')
 check('missing file has no traceback', 'Traceback' not in r.stderr, r.stderr[:80])
+
+# ── a UTF-8 page is read as UTF-8, whatever the locale ─────────────────
+# open() without an explicit encoding uses the locale's, which is cp1252 on a
+# stock Windows install. The em-dash and curly-apostrophe rules then read
+# mojibake and never fire, so a page full of tells scores CLEAN. Driven through
+# the CLI on purpose: --text was always fine, the file path was the blind spot.
+_dir = tempfile.mkdtemp()
+_utf8 = os.path.join(_dir, 'utf8.html')
+with open(_utf8, 'w', encoding='utf-8') as fh:
+    fh.write('<html><body><p>It’s not just a tool, it’s a platform. '
+             'Whether you’re a startup or an agency, we ship fast — '
+             'really fast — every week.</p></body></html>')
+r = subprocess.run([sys.executable, f'{here}/deslop.py', _utf8],
+                   capture_output=True, text=True, encoding='utf-8', errors='replace')
+check('utf-8 file is not decoded as cp1252', r.returncode != 0,
+      'a UTF-8 page full of tells scored CLEAN — locale decoding is back')
+check('utf-8 file: construction rule fires', 'construction' in r.stdout, r.stdout[:140])
+check('utf-8 file: em-dash rule fires', 'em-dash' in r.stdout, r.stdout[:140])
+
+# ── a flagged snippet outside the console codepage must not crash ──────
+# Reading UTF-8 properly means CJK and emoji reach print(), and a Windows
+# console is cp1252. This used to exit on a UnicodeEncodeError traceback
+# instead of printing a score, which is a crash dressed as a failing gate.
+_cjk = os.path.join(_dir, 'cjk.html')
+with open(_cjk, 'w', encoding='utf-8') as fh:
+    fh.write('<html><body><p>Our seamless platform 你好 — 世界 '
+             '— delivers robust value today.</p></body></html>')
+r = subprocess.run([sys.executable, f'{here}/deslop.py', _cjk],
+                   capture_output=True, text=True, encoding='utf-8', errors='replace')
+check('non-cp1252 snippet does not traceback', 'Traceback' not in r.stderr, r.stderr[-160:])
+check('non-cp1252 snippet still scores', 'score' in r.stdout, r.stdout[:140])
 
 # ── clean human copy still scores 5/5 ───────────────────────────────────────
 for ok in ('Six nails per shingle, every shingle.',

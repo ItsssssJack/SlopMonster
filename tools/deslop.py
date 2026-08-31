@@ -203,6 +203,14 @@ def report(hits, label='', allow_proof=False):
 
 
 if __name__ == '__main__':
+    # Reading UTF-8 correctly means real non-ASCII now reaches print(), and a
+    # Windows console is cp1252: one CJK character or emoji inside a flagged
+    # snippet used to end the run in a UnicodeEncodeError traceback. Replace
+    # rather than raise — the job is to name the tell, not to echo it perfectly.
+    try:
+        sys.stdout.reconfigure(errors='replace')
+    except (AttributeError, ValueError):  # already-wrapped or exotic stream
+        pass
     args = sys.argv[1:]
     if not args:
         sys.exit(__doc__)
@@ -214,7 +222,13 @@ if __name__ == '__main__':
         text = ' '.join(args[1:])
     else:
         try:
-            html = open(args[0]).read()
+            # Encoding is explicit because open() otherwise uses the locale's,
+            # which is cp1252 on a stock Windows install. A UTF-8 page then
+            # decodes em-dashes and curly apostrophes into mojibake, and the
+            # punctuation and construction rules go silently blind: the same
+            # copy scored 4/5 through --text and 5/5 CLEAN from a file. A gate
+            # that passes because it cannot read is worse than no gate.
+            html = open(args[0], encoding='utf-8', errors='replace').read()
         except (FileNotFoundError, IsADirectoryError, PermissionError) as e:
             sys.exit(f'deslop: cannot read {args[0]}: {e.strerror}')
         if '--view' in args:
