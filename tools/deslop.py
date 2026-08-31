@@ -86,6 +86,14 @@ PHRASES = [
 # Invented social proof. Deliberately broad: this is the one mistake with no
 # route back, so recall matters more than precision. If your number is real and
 # you can evidence it, pass --allow-proof and the rule drops to advisory.
+# Hyphenated compound modifiers. One is ordinary English: "a 25-year warranty".
+# Four in a sentence is a model reaching for authority it has not earned, and the
+# giveaway is that they stack in front of one noun: "our industry-leading,
+# context-aware, best-in-class, AI-powered platform". The floor is high on purpose.
+# Real trade copy runs one to three per hundred words, and stacked slop runs sixty.
+COMPOUND = re.compile(r'\b[a-z]{2,}-[a-z]{2,}(?:-[a-z]{2,})*\b', re.I)
+COMPOUND_FLOOR = 4
+
 PROOF = re.compile(
     # Digits, thousands separators and a decimal point, but never a trailing
     # full stop. Absorbing it let "Don't Make Me Think, 2000. The reader…" read
@@ -147,6 +155,7 @@ def markdown_prose(md):
     # A bullet is its own line of copy. Left joined, two list items donate one
     # em-dash each and read as a single machine cadence that nobody wrote.
     md = re.sub(r'^\s*(?:[-*+]|\d+\.)\s+', ' . ', md, flags=re.M)
+    md = re.sub(r'^\s*>\s?', ' . ', md, flags=re.M)
     md = re.sub(r'[*_>]', ' ', md)
     return re.sub(r'\s+', ' ', md).strip()
 
@@ -182,6 +191,15 @@ def audit(text):
                 hits['punctuation'].append(('two or more em-dashes in one sentence',
                                             window[:70].strip()))
                 break
+    for s in re.split(r'(?<=[.!?])\s+', text):
+        for i in range(0, max(1, len(s)), 220):
+            window = s[i:i + 220]
+            found = COMPOUND.findall(window)
+            if len(found) >= COMPOUND_FLOOR:
+                hits['punctuation'].append((f'{len(found)} hyphenated compounds stacked '
+                                            'in one sentence', ', '.join(found[:4])))
+                break
+
     # Floor of 3: two semicolons in a long technical page is a style, not a tell.
     if text.count(';') > max(3, len(text) // 1200):
         hits['punctuation'].append(('semicolon-heavy for web copy', f"{text.count(';')} found"))

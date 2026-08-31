@@ -144,6 +144,18 @@ check('bullets do not merge into one cadence', 'punctuation' not in groups(md), 
 md = markdown_prose('- Our team — trained, certified and local — is ready to help.')
 check('dash pile-up inside a bullet still fires', 'punctuation' in groups(md), repr(md))
 
+# ── hyphens: stacking, not the hyphen itself ────────────────────────────────
+stack = 'Our industry-leading, context-aware, best-in-class, AI-powered platform ships.'
+check('four stacked compounds fire', 'punctuation' in groups(stack), stack)
+for ok in ('We fitted a 25-year warranty and a 4.2-hour call-out on a two-storey roof.',
+           'The built-up roof needs a full-width strip before the tear-off.',
+           'A well-known, long-standing trade name.'):
+    check('ordinary hyphenated copy stays clean',
+          'punctuation' not in groups(ok), f'{ok} -> {groups(ok)}')
+
+md = markdown_prose('> ~~Em-dash pile-up~~\n> **Thirty-eight on the crew, factory-trained today.**')
+check('blockquote lines do not merge', 'punctuation' not in groups(md), repr(md))
+
 # ── proof: a number and its noun live in one sentence ───────────────────────
 for hit in ('10,000+ happy users', '500 teams', '2,000 verified customers',
             '3.5 million customers'):

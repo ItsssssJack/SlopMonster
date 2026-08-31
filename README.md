@@ -1,29 +1,37 @@
 # SlopMonster
 
-![The five SlopMonster mascots in a line-up, one for each rule the linter scores](docs/img/hero.png)
+![The five SlopMonster mascots in a line-up, one for each rule it scores you on](docs/img/hero.png)
 
 **Turn AI-written copy into copy a human would ship.**
 
-Every serious humanizer is built on the same public research. This one adds the two
-things the others skip: a linter that can actually **fail** you, and a cleanse pass run
-by a **rival model** — because a model cannot hear its own accent.
+AI writing has a smell. `delve`, `seamless`, `unlock`, `it's not just a tool, it's a
+journey`. Readers catch it now, and a page that smells of it is a page they stop
+trusting.
 
-Built for landing pages, READMEs, emails, scripts — anything a human is going to read
+Most tools that fix this are built on the same public research. This one adds the two
+things the others skip.
+
+**It scores your copy out of 5 and it can fail your build.** No opinions, no vibes, just
+patterns. Developers call this a linter. Everyone else can call it a checker that will
+not let you ship.
+
+**A rival model does the cleaning.** If Claude wrote the draft, GPT cleans it. A model
+cannot hear its own accent, the same way you cannot hear yours.
+
+Works on landing pages, READMEs, emails and scripts. Anything a person is going to read
 and judge.
-
-![Where it comes from](docs/img/where-it-comes-from.png)
 
 ## The loop
 
 ```
-1. LINT      tools/deslop.py     scores /5, exits red below 5. Regex, no opinions.
+1. SCORE     tools/deslop.py     marks it out of 5, exits red below 5. Patterns, no opinions.
 2. REWRITE   three passes        kill the vocabulary → kill the shapes → put a person back in
 3. CLEANSE   tools/cleanse.sh    a different model family strips the tells the first one wrote
-4. RE-LINT   tools/deslop.py     ship only at 5/5
+4. RESCORE   tools/deslop.py     ship only at 5/5
 ```
 
-The linter gets the first and last word because the linter is honest and the model is
-persuasive. "Mostly clean" is how a page ends up sounding like every other AI page on
+The scorer gets the first word and the last word, because the scorer is honest and the
+model is persuasive. "Mostly clean" is how a page ends up sounding like every other AI page on
 the internet.
 
 ## Receipts, not claims
@@ -65,7 +73,7 @@ python3 tools/deslop.py index.html --allow-proof
 python3 tools/test_deslop.py
 ```
 
-No dependencies. The linter is stdlib Python. The cleanse script needs one AI CLI
+No dependencies. The scorer is stdlib Python. The cleanse script needs one AI CLI
 (`codex` or `claude`), or neither, in which case it prints the prompt for you to paste.
 `.github/workflows/slop.yml` is the build gate, ready to copy into your own repo.
 
@@ -93,7 +101,7 @@ the one thing this step exists to prevent.
 Then it re-lints, always: a frontier model is very good at removing tells and quite
 capable of adding new ones while it does.
 
-## What the linter hunts
+## What the scorer hunts
 
 Five groups. Trip one and you lose a point. Below 5/5 the command exits red, so a build can
 stop on it.
@@ -106,9 +114,7 @@ through is what the first draft said. Bold is what shipped. The full record:
 
 Every specimen on this page sits in `code formatting` or is struck through. That is not
 decoration. A literal is not copy, so `deslop.py` skips both when it reads a `.md` file,
-which is how this README passes the linter it documents.
-
-![Signs of AI writing, caught on a real build](docs/img/ridgeline-signs.png)
+which is how this README passes the scorer it documents.
 
 ![Rule 1, AI vocabulary: delve, leverage, seamless, unlock](docs/img/rule-1-vocab.png)
 
@@ -162,7 +168,7 @@ three to five times the human rate.
 The check only looks inside a 220 character window, and that limit is doing real work.
 Interface text has no full stops. Nav items, buttons and labels all run together, so a
 naive sentence split treats a whole page as one sentence and the rule then fires on
-everything. A linter that cries wolf gets switched off, so the window stays.
+everything. A scorer that cries wolf gets switched off, so the window stays.
 
 Semicolons are counted too, but only past a floor of three, scaled to the length of the
 page. Two semicolons in a long technical document is a style, not a tell.
@@ -184,7 +190,7 @@ clause.
 
 The narrowness is the point. "Inspection, repair and replacement for homes" is three real
 things a roofer does. Flagging that would be crying wolf, and the next person would turn
-the linter off.
+the scorer off.
 
 > ~~Trusted, reliable and built to last.~~
 > **Six nails per shingle, every shingle.**
@@ -199,7 +205,7 @@ question. Does the line sell anything?
 Clean copy that says nothing is still a dead page. Two things run here.
 
 **The hard rule: never invent proof.** No customer counts, no testimonials, no ratings the
-business has not earned. The linter flags any number sitting next to a people-noun, like
+business has not earned. The scorer flags any number sitting next to a people-noun, like
 `10,000+ happy users`. It is deliberately trigger-happy. A false alarm costs you ten
 seconds. A miss puts a claim on your site that you cannot back. If your number is real and
 you can evidence it, `--allow-proof` drops it to a warning and still prints the hits.
@@ -240,8 +246,6 @@ before and after: [`references/principles.md`](references/principles.md).
 
 ## What goes in the tells' place
 
-![Five principles](docs/img/five-principles.png)
-
 Clean is not the same as good. Five principles decide what the line says instead —
 Krug's *Don't Make Me Think*, Priestley's problem-first pitch order, and the
 specificity-over-superlatives argument Hormozi makes from the offer side. Each with a
@@ -253,8 +257,6 @@ The Ridgeline Roofing build: a Lorem-ipsum wireframe to a shipped site, with eve
 headline's before → after, the six tells caught in first drafts, and the verify-or-mark
 pass on every number. This is the file that teaches:
 [`examples/ridgeline-roofing.md`](examples/ridgeline-roofing.md).
-
-![Every line, before and after](docs/img/ridgeline-before-after.png)
 
 > ~~The area's most trusted roofing experts.~~
 > **Roofing, and only roofing, since 2001.**
@@ -270,7 +272,7 @@ one mistake with no route back.
 And this skill will never claim to "beat AI detectors". Detectors are noise. The target
 is a human reader's gut.
 
-This file passes its own linter. `python3 tools/deslop.py README.md` scores **5/5**, and
+This file passes its own scorer. `python3 tools/deslop.py README.md` scores **5/5**, and
 it is the same catalogue and the same regexes that score your landing page. Nothing was
 softened to get there. The specimens are marked as literals, in `code` or struck through,
 and the prose around them had to be written clean like anything else.
@@ -288,7 +290,7 @@ deliberately excluded.
 
 ```
 SKILL.md                            the agent skill — the whole loop as instructions
-tools/deslop.py                     the linter. stdlib, no deps, exits red below 5/5
+tools/deslop.py                     the scorer. stdlib, no deps, exits red below 5/5
 tools/test_deslop.py                regression suite. run it after touching any regex
 tools/cleanse.sh                    rival-model cleanse, auto-routed, time-bound
 .github/workflows/slop.yml          the build gate, ready to copy
