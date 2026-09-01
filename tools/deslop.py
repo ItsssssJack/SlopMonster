@@ -107,6 +107,21 @@ PROOF = re.compile(
     re.I)
 
 
+def normalise(t):
+    """Fold the typographic variants back to the plain ones the rules match.
+
+    A non-breaking hyphen is not `-`, \xa0 is not a space, and a curly
+    apostrophe is not `'`. Miss any of them and `cutting-edge`,
+    `it's not just X` and `whether you're` all stop matching on real copy,
+    because real copy is exactly where the pretty characters come from.
+
+    Every input path runs through here. Markdown skipped it once, and the
+    construction rules went blind on every .md file with a smart quote in it.
+    """
+    t = t.replace('‑', '-').replace('\xa0', ' ').replace('’', "'")
+    return re.sub(r'\s+', ' ', t).strip()
+
+
 def visible_text(html):
     """What a visitor actually reads. Script/style stripped, tags removed."""
     t = re.sub(r'<(script|style)\b.*?</\1>', ' ', html, flags=re.S | re.I)
@@ -117,10 +132,23 @@ def visible_text(html):
     # punctuation rule, and every apostrophe-encoded page went blind to the
     # `it's not just X` and `whether you're` patterns.
     t = _html.unescape(t)
-    # unescape maps &#8209; to a non-breaking hyphen and &nbsp; to \xa0, neither
-    # of which match `cutting-edge` or a plain space. Curly apostrophe likewise.
-    t = t.replace('‑', '-').replace('\xa0', ' ').replace('’', "'")
-    return re.sub(r'\s+', ' ', t).strip()
+    return normalise(t)
+
+
+def read_utf8(path):
+    """Read a file as UTF-8, whatever the machine's locale says.
+
+    open() with no encoding= uses the locale's, which is cp1252 on a stock
+    Windows install. A UTF-8 page then decodes its em-dashes and curly
+    apostrophes into mojibake, .replace('\u2019', "'") never fires, and
+    window.count('\u2014') counts zero. The punctuation and construction rules
+    go silently blind: the same copy scores 4/5 through --text and 5/5 CLEAN
+    from a file path, and the file path is what CI wires in.
+
+    A gate that passes because it cannot read is worse than no gate at all.
+    Reported by @Azrael259 in #3, who hit it on Windows.
+    """
+    return open(path, encoding='utf-8', errors='replace').read()
 
 
 def markdown_prose(md):
@@ -157,7 +185,7 @@ def markdown_prose(md):
     md = re.sub(r'^\s*(?:[-*+]|\d+\.)\s+', ' . ', md, flags=re.M)
     md = re.sub(r'^\s*>\s?', ' . ', md, flags=re.M)
     md = re.sub(r'[*_>]', ' ', md)
-    return re.sub(r'\s+', ' ', md).strip()
+    return normalise(md)
 
 
 def audit(text):
@@ -261,6 +289,16 @@ def report(hits, label='', allow_proof=False):
 
 
 if __name__ == '__main__':
+    # Reading UTF-8 correctly means real non-ASCII now reaches print(), and a
+    # Windows console is cp1252: one CJK character or emoji inside a flagged
+    # snippet would end the run in a UnicodeEncodeError traceback. Replace
+    # rather than raise. Naming the tell is the job; echoing it byte-for-byte
+    # is not, and the suite already asserts this tool never shows a traceback.
+    try:
+        sys.stdout.reconfigure(errors='replace')
+    except (AttributeError, ValueError):      # already-wrapped or exotic stream
+        pass
+
     args = sys.argv[1:]
     if not args:
         sys.exit(__doc__)
@@ -277,12 +315,12 @@ if __name__ == '__main__':
             text = markdown_prose(text)
     elif args[0].endswith('.md') or as_md:
         try:
-            text = markdown_prose(open(args[0]).read())
+            text = markdown_prose(read_utf8(args[0]))
         except (FileNotFoundError, IsADirectoryError, PermissionError) as e:
             sys.exit(f'deslop: cannot read {args[0]}: {e.strerror}')
     else:
         try:
-            html = open(args[0]).read()
+            html = read_utf8(args[0])
         except (FileNotFoundError, IsADirectoryError, PermissionError) as e:
             sys.exit(f'deslop: cannot read {args[0]}: {e.strerror}')
         if '--view' in args:
