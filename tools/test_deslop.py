@@ -165,6 +165,28 @@ for clean in ('"Don\'t Make Me Think", 2000. The reader decides in seconds.',
               'Version 2.0. Readers can skip it.'):
     check('proof does not reach across a full stop', not PROOF.search(clean), clean)
 
+# ── negated "just": the contracted register counts too ──────────────────────
+# `\bnot\b` has no standalone token to match inside `isn't`, so an uncontracted-only
+# pattern scored every contracted form clean — in the register a model reaches for
+# when it is trying hardest to sound human. The full stop cases matter as much: the
+# window could not previously cross one.
+for hit in ("This isn't just a map, it's a plan.",
+            'It is not just a map. It is a plan.',
+            "SlopMonster isn't just a linter, it's a gate.",
+            "These aren't just words, they're tells.",
+            'This is not just a map, but a plan.',
+            "It doesn't just score you, it fails the build."):
+    check('negated-just construction caught', 'phrases' in groups(hit), hit)
+
+# Paired must-stay-clean cases, per this file's rule. The Y clause needs a comma or a
+# full stop before its pronoun, which is what stops a bare negation tripping the rule.
+for clean in ("It's not just about money.",
+              'Do not just take my word for it.',
+              'We could not just sit there. The rain kept falling.',
+              'The lot is not paved, it is grass.',
+              'He said the price was not right, and we walked away.'):
+    check('negated-just stays clean', 'phrases' not in groups(clean), clean)
+
 if fails:
     print(f'{len(fails)} FAILED\n')
     for f in fails:

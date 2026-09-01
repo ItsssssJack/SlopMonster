@@ -57,12 +57,28 @@ def _root_pattern(word):
         return rf"(?<!\w){re.escape(word)}(?!\w)"
     return rf"(?<!\w){re.escape(root)}(?:e|es|ed|ing|ion|ions|ional|ive|al|ally|s|ly|ness)?(?!\w)"
 
+# Negated "just/only/merely/simply", in either register.
+#
+# `\bnot\b` cannot match inside `isn't` — there is no standalone `not` token there — so
+# an uncontracted-only pattern misses every contracted form, which is the register a
+# model reaches for when it is trying hardest to sound human. Matching the `n't` suffix
+# covers isn't / aren't / wasn't / doesn't / don't / won't / can't without enumerating
+# them. Straight and curly apostrophes both.
+_NEG_JUST = r"(?:\bnot|n['’]t)\s+(?:just|only|merely|simply)\b"
+
+# The Y clause of the swap, reached across a comma or a single full stop. It is not
+# always a copula — "it doesn't just park you, it GETS you there" is the same move — so
+# this takes a pronoun subject and lets any verb follow. The punctuation carries the
+# precision: "It's not just about money." has no Y clause and stays clean, and so does
+# "Do not just take my word for it."
+_XY_TAIL = r"[^!?]{0,80}?[,.]\s*(?:it|this|that|they|we|you|he|she|i)\b"
+
 PHRASES = [
     # constructions, not words — these are the loudest tells
     # The contracted and uncontracted forms both matter: formal register is not an
     # adversarial rewrite, it is the default thing a model emits.
-    (r"\bnot (just|only|merely|simply)\b[^.!?]{0,80}\bbut\b", "the 'not just X, but Y' construction"),
-    (r"\bit(?:'?s| is) not (only|just)\b[^.!?]{0,80}\bit(?:'?s| is)\b", "the 'it's not just X, it's Y' construction"),
+    (_NEG_JUST + r"[^.!?]{0,80}\bbut\b", "the 'not just X, but Y' construction"),
+    (_NEG_JUST + _XY_TAIL, "the 'not just X, it's Y' construction"),
     (r"\bwhether you(?:'?re| are)\b[^.!?]{0,40}\bor\b", "the 'whether you're X or Y' opener"),
     (r"\bmore than just\b",                        "'more than just'"),
     (r"\b(that|this)(?:'?s| is) where\b[^.!?]{0,30}\bcomes? in\b", "'that's where X comes in'"),
