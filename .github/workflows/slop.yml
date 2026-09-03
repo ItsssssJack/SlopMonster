@@ -16,6 +16,11 @@ jobs:
       - name: Regression tests
         run: python3 tools/test_deslop.py
 
+      # The copy/notes split is what keeps the model's change notes out of
+      # cleansed.md. No model calls, so it runs here like any other unit test.
+      - name: Cleanse split tests
+        run: bash tools/test_cleanse.sh
+
       # This is the gate itself, copied as-is into your own repo: point it at
       # whatever file holds your shipped copy. Non-zero below 5/5 fails the build.
       - name: Lint the shipped copy
