@@ -66,11 +66,22 @@ runs on a **different model family** than the one that wrote the draft:
 | No CLI at all | — | `cleanse.sh` prints the prompt; paste it into the other family's chat |
 
 ```bash
-tools/cleanse.sh draft.md > cleansed.md      # time-bound, exits 124 on hang
+tools/cleanse.sh draft.md > cleansed.md                 # copy out, notes on stderr
+tools/cleanse.sh draft.md > cleansed.md 2> notes.txt    # keep the notes as well
 ```
 
 The instruction it carries (`prompts/cleanse.txt`): strip the tells, keep every fact,
-keep the length within 10%, invent nothing, return only the copy.
+keep the length within 10%, invent nothing.
+
+It returns **two things**. The rewritten copy, then a `<<<SLOPMONSTER-NOTES>>>` line, then up
+to five bullets naming each tell and its fix. The script splits them, so **stdout is copy and
+stderr is notes**, and the redirect above writes prose only.
+
+Read the notes. PASS 2 tells the model to stop at the last real point, so it will sometimes
+delete your closing line, and the notes are the only place it says so.
+
+`WARNING no <<<SLOPMONSTER-NOTES>>> line` means the model ignored the format and the whole
+reply came through as copy. Check the tail before you ship.
 
 ## Step 4 — Re-lint
 
