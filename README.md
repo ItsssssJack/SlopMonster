@@ -73,6 +73,9 @@ python3 tools/deslop.py index.html --allow-proof
 python3 tools/test_deslop.py
 ```
 
+The catalogue is English only. Copy in another language scores 5/5 because the scorer
+cannot read it, not because it is clean.
+
 No dependencies. The scorer is stdlib Python. The cleanse script needs one AI CLI
 (`codex` or `claude`), or neither, in which case it prints the prompt for you to paste.
 `.github/workflows/slop.yml` is the build gate, ready to copy into your own repo.
@@ -188,9 +191,9 @@ This check is deliberately narrow, and only two shapes fire it. With the Oxford 
 needs three single words. Without it, the third item has to be a short phrase that ends the
 clause.
 
-The narrowness is the point. "Inspection, repair and replacement for homes" is three real
-things a roofer does. Flagging that would be crying wolf, and the next person would turn
-the scorer off.
+The narrowness is the point. "Inspection, repair and replacement for homes and commercial
+buildings" is three real things a roofer does, and it scores clean. Flagging that would be
+crying wolf, and the next person would turn the scorer off.
 
 > ~~Trusted, reliable and built to last.~~
 > **Six nails per shingle, every shingle.**

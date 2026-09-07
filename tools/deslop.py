@@ -119,7 +119,11 @@ PROOF = re.compile(
     r"((?:happy|early|active|satisfied|verified|trusted|delighted)\s+)?"
     r"(?:\w+\s+){0,1}"
     r"(users?|customers?|learners?|students?|teams?|members?|companies|businesses"
-    r"|homeowners?|subscribers?|clients?|patients?|readers?|sites?|projects?)",
+    r"|homeowners?|subscribers?|clients?|patients?|readers?|sites?|projects?)"
+    # Closed with a word boundary, like `_root_pattern`. Without it `sites?`
+    # matched inside "sitemaps", `teams?` inside "teamsters" and `projects?`
+    # inside "projectors", and "12 sitemaps" scored as invented social proof.
+    r"(?!\w)",
     re.I)
 
 
@@ -254,9 +258,11 @@ def audit(text):
     # Without it, the third item must be a 2–3 word phrase that ends the clause:
     # "Trusted, reliable and built to last". That phrase requirement is what
     # separates a rhetorical flourish from a plain list of services —
-    # "Inspection, repair and replacement for homes" is three real things a
-    # roofer does, and flagging it would be exactly the wolf-crying that gets a
-    # linter switched off.
+    # "Inspection, repair and replacement for homes and commercial buildings"
+    # is three real things a roofer does, its third item runs long, and
+    # flagging it would be exactly the wolf-crying that gets a linter switched
+    # off. Note the shape is what is judged, not the meaning: a three-word
+    # closing item ("replacement for homes") does fire, by design.
     for pat in (r'\b(\w{4,}),\s+(\w{4,}),\s+and\s+(\w{4,})\b',
                 r'\b(\w{4,}),\s+(\w{4,})\s+and\s+((?:\w+\s+){1,2}\w+)\s*[.!?,;:]'):
         for m in re.finditer(pat, text):
