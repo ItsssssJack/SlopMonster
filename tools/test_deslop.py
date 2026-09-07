@@ -220,6 +220,25 @@ for clean in ("It's not just about money.",
               'He said the price was not right, and we walked away.'):
     check('negated-just stays clean', 'phrases' not in groups(clean), clean)
 
+# ── proof nouns need a closing boundary ─────────────────────────────────────
+# `sites?` matched inside "sitemaps", `teams?` inside "teamsters". Real proof
+# claims must still fire; ordinary nouns that merely start with one must not.
+for clean in ('We generated 12 sitemaps last quarter.',
+              'The hall seats 20 projectors.',
+              'We shipped 40 userscripts.',
+              'The union sent 300 teamsters.'):
+    check('proof noun does not match inside a longer word', 'proof' not in groups(clean), clean)
+for hit in ('Trusted by 10,000 teams.', 'We host 12 sites.', 'Over 300 clients served.'):
+    check('proof claim still caught', 'proof' in groups(hit), hit)
+
+# ── the README's own must-not-fire tricolon example ─────────────────────────
+# The wolf-crying case the narrowness exists to prevent. If this fires, the
+# README is lying about the rule.
+check('README safe tricolon example stays clean',
+      'rhythm' not in groups('Inspection, repair and replacement for homes and commercial buildings.'))
+check('README tricolon example still fires',
+      'rhythm' in groups('Trusted, reliable and built to last.'))
+
 if fails:
     print(f'{len(fails)} FAILED\n')
     for f in fails:
