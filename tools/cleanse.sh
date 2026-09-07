@@ -41,6 +41,46 @@ $DRAFT"
 
 find_bin() { command -v "$1" 2>/dev/null || { [ -x "$HOME/.local/bin/$1" ] && echo "$HOME/.local/bin/$1"; }; }
 
+# The reply is the copy, then a sentinel line, then the change notes. Copy goes to
+# STDOUT so the documented `cleanse.sh draft.md > cleansed.md` writes prose ONLY;
+# the notes go to STDERR so you still read them.
+#
+# Splitting on the old bare `---` was not possible: `---` is a legal markdown
+# horizontal rule and a YAML frontmatter delimiter, so any draft that contained one
+# got cut at the wrong place. Without a split the notes landed inside cleansed.md,
+# and step 4 then scored the model's own commentary as prose and stamped it CLEAN —
+# the gate reporting a clean page at exactly the moment it was measuring the wrong
+# bytes. Redirecting to a file and reading only that file is the documented flow, so
+# the leak was invisible until you opened the output.
+#
+# Fails OPEN on content: no sentinel means print the whole reply as copy and warn.
+# A stray note you can see and delete; a silently swallowed last paragraph you cannot.
+NOTES_SENTINEL='<<<SLOPMONSTER-NOTES>>>'
+
+emit_copy() {
+  awk -v s="$NOTES_SENTINEL" '
+    $0 == s { seen = 1; next }
+    seen    { notes = notes $0 "\n"; next }
+            { body = body $0 "\n" }
+    END {
+      if (!seen) {
+        printf "%s", body
+        print "cleanse: WARNING no " s " line in the reply." > "/dev/stderr"
+        print "cleanse: emitting everything as copy. Check the tail before you ship," > "/dev/stderr"
+        print "cleanse: because change notes may be scored as prose by the re-lint." > "/dev/stderr"
+        exit 0
+      }
+      sub(/\n+$/, "", body)          # drop the blank lines that preceded the sentinel
+      printf "%s\n", body
+      if (notes != "") {
+        print ""                       > "/dev/stderr"
+        print "cleanse: what changed -" > "/dev/stderr"
+        printf "%s", notes             > "/dev/stderr"
+      }
+    }
+  '
+}
+
 CODEX="$(find_bin codex || true)"
 CLAUDE="$(find_bin claude || true)"
 
@@ -73,13 +113,17 @@ if [ -n "$CODEX" ] && [ "${DESLOP_WRITER:-claude}" != "gpt" ]; then
   # structure exactly" instruction the prompt file gives.
   BODY="$(printf '%s\n' "$RAW" | awk '$0=="codex"{buf="";on=1;next} $0=="tokens used"{on=0;next} on{buf=buf $0 "\n"} END{printf "%s", buf}')"
   if [ -n "$(printf '%s' "$BODY" | tr -d '[:space:]')" ]; then
-    printf '%s\n' "$BODY"
+    printf '%s\n' "$BODY" | emit_copy
   else
-    printf '%s\n' "$RAW"
+    printf '%s\n' "$RAW" | emit_copy
   fi
 elif [ -n "$CLAUDE" ] && [ "${DESLOP_WRITER:-claude}" = "gpt" ]; then
   # GPT wrote the draft -> Claude cleanses it.
-  run_bounded "$CLAUDE" -p "$FULL"
+  # Captured before the split, not piped straight into it: a pipeline reports the
+  # LAST command's status, so a timeout would have returned emit_copy's 0 and the
+  # 124 contract would have been lost.
+  CLAUDE_OUT="$(run_bounded "$CLAUDE" -p "$FULL")" || exit $?
+  printf '%s\n' "$CLAUDE_OUT" | emit_copy
 else
   # Reached when the only CLI available is the same family that wrote the draft.
   # Running that would be a model marking its own homework, which is the one

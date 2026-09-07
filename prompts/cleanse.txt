@@ -40,7 +40,13 @@ ABSOLUTE RULES
 - Preserve any HTML tags, markdown structure and placeholders exactly as they appear.
 
 OUTPUT
-Return the rewritten copy in full, and nothing before it. Then a line "---", then at most five
-bullets naming the tell and the fix. No preamble, no restatement of these instructions.
+Return the rewritten copy in full, and nothing before it. Then a line containing exactly
+<<<SLOPMONSTER-NOTES>>>
+and nothing else, then at most five bullets naming the tell and the fix. No preamble, no
+restatement of these instructions.
+
+That sentinel line is parsed by a script. Emit it exactly once, alone on its line, with no
+bullet, quotes or backticks around it, even when you changed nothing. Everything above it is
+published as copy; everything below it is shown to the author as notes.
 
 TEXT TO EDIT:
