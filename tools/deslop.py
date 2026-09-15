@@ -111,6 +111,7 @@ COMPOUND = re.compile(r'\b[a-z]{2,}-[a-z]{2,}(?:-[a-z]{2,})*\b', re.I)
 COMPOUND_FLOOR = 4
 
 PROOF = re.compile(
+    r"(?:"
     # Digits, thousands separators and a decimal point, but never a trailing
     # full stop. Absorbing it let "Don't Make Me Think, 2000. The reader…" read
     # as a proof claim, because the year swallowed the sentence break and then
@@ -119,11 +120,34 @@ PROOF = re.compile(
     r"((?:happy|early|active|satisfied|verified|trusted|delighted)\s+)?"
     r"(?:\w+\s+){0,1}"
     r"(users?|customers?|learners?|students?|teams?|members?|companies|businesses"
-    r"|homeowners?|subscribers?|clients?|patients?|readers?|sites?|projects?)"
+    r"|homeowners?|subscribers?|clients?|patients?|readers?|sites?|projects?"
+    # Trade and logistics copy counts its volume in its own nouns, and the SaaS
+    # list above waved "Trusted by 2,500+ importers worldwide" through at 5/5.
+    # Same borrowed credibility, freight vocabulary. `entry` is spelled out
+    # because `entries?` only ever matched "entrie".
+    r"|importers?|exporters?|shippers?|forwarders?|brokers?|carriers?"
+    r"|declarations?|shipments?|consignments?|clearances?|filings?|entries|entry"
+    r"|containers?|invoices?|suppliers?|merchants?|retailers?|sellers?"
+    r"|brands?|partners?|warehouses?)"
     # Closed with a word boundary, like `_root_pattern`. Without it `sites?`
     # matched inside "sitemaps", `teams?` inside "teamsters" and `projects?`
     # inside "projectors", and "12 sitemaps" scored as invented social proof.
-    r"(?!\w)",
+    r"(?!\w)"
+    r"|"
+    # A flattering percentage is the same unbacked claim wearing a different
+    # unit: "99.9% accuracy" earns its authority exactly the way "10,000 users"
+    # does. The count branch cannot see it, because `%` is neither a space nor a
+    # word character, so the whole line scored clean.
+    #
+    # Deliberately NOT a bare `\d+%`. Trade copy is full of percentages that are
+    # simply facts — duty rates, VAT, margins — and a rule that flags "25% VAT"
+    # is a rule you learn to skip. Only nouns that flatter the writer count.
+    r"([\d][\d,]*(?:\.\d+)?)\s*%\s*"
+    r"(?:\w+\s+){0,1}"
+    r"(accuracy|uptime|satisfaction|success|approval|retention|compliance"
+    r"|on-time|first-pass|first-time|clearance|delivery|completion)"
+    r"(?!\w)"
+    r")",
     re.I)
 
 

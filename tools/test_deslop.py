@@ -231,6 +231,33 @@ for clean in ('We generated 12 sitemaps last quarter.',
 for hit in ('Trusted by 10,000 teams.', 'We host 12 sites.', 'Over 300 clients served.'):
     check('proof claim still caught', 'proof' in groups(hit), hit)
 
+# ── proof: trade and logistics nouns are social proof too ───────────────────
+# The SaaS noun list scored "Trusted by 2,500+ importers worldwide" and
+# "1 million declarations" a clean 5/5 — the exact borrowed-credibility line
+# the rule exists to catch, waved through for being about freight.
+for hit in ('Trusted by 2,500+ importers worldwide.',
+            'We have processed over 1 million declarations.',
+            'Over 400 shipments cleared last month.',
+            '12 forwarders rely on us.',
+            'We filed 3,000 entries.'):
+    check('trade proof claim caught', 'proof' in groups(hit), hit)
+for clean in ('The gantry lifts 40 containerships.',
+              'We reviewed 12 brandings.'):
+    check('trade proof noun does not match inside a longer word',
+          'proof' not in groups(clean), clean)
+
+# ── proof: a flattering percentage is a count claim in another unit ──────────
+# Real rates must stay clean. Trade copy quotes duty and VAT constantly, and a
+# rule that fires on "25% VAT" is a rule the reader learns to ignore.
+for hit in ('A 99.9% accuracy rate.',
+            '99.5% on-time delivery.',
+            'We hit 100% compliance.'):
+    check('percentage proof claim caught', 'proof' in groups(hit), hit)
+for clean in ('Standard VAT is 25% on import.',
+              'The duty rate came to 12% of the customs value.',
+              'A 100% money-back guarantee.'):
+    check('real rate percentage stays clean', 'proof' not in groups(clean), clean)
+
 # ── the README's own must-not-fire tricolon example ─────────────────────────
 # The wolf-crying case the narrowness exists to prevent. If this fires, the
 # README is lying about the rule.
