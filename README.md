@@ -19,7 +19,21 @@ not let you ship.
 cannot hear its own accent, the same way you cannot hear yours.
 
 Works on landing pages, READMEs, emails and scripts. Anything a person is going to read
-and judge.
+and judge. Short messages to one person get three shape passes first — see
+[references/short-messages.md](references/short-messages.md), which is how this reply
+scores 5/5 CLEAN on the scorer below and still cannot be sent:
+
+```text
+Hi Jennifer! Thanks so much for the kind words about the dashboard, really glad you're
+enjoying it so far! To answer your questions: 1) Yes, I can absolutely update the header
+color to match your brand blue, I will get that changed today. 2) Of course! I'd be happy
+to add Sarah as a user, I will just need her email address. 3) Regarding the SMS piece,
+we are still on track and I am expecting to have it ready by the end of next week. Let me
+know if you have any other questions!
+```
+
+The reply is fenced, so it is input rather than copy. Run the scorer on it and it scores
+5/5 CLEAN; the shape passes in `references/short-messages.md` are what catch it.
 
 ## The loop
 
@@ -299,6 +313,7 @@ tools/cleanse.sh                    rival-model cleanse, auto-routed, time-bound
 .github/workflows/slop.yml          the build gate, ready to copy
 prompts/cleanse.txt                 the exact instruction the cleanse model gets
 references/signs-of-ai-writing.md   the full catalogue: 2 vocab tiers, 8 shapes, cadence, rhythm, proof
+references/short-messages.md        reply shape, hard cuts and the contraction sweep for short messages
 references/principles.md            the five rewrite principles, each with a real pair
 references/sources.md               every source this stands on
 examples/ridgeline-roofing.md       full site build, every line before → after

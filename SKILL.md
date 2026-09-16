@@ -19,6 +19,16 @@ because the linter is honest and the model is persuasive.
 4. RE-LINT   python3 tools/deslop.py again           ship only at 5/5
 ```
 
+## Step 0 — A short message to one person (run the shape passes first)
+
+> The scorer's windows and floors are tuned for pages. A draft under roughly 150 words
+> going to one person fails differently: the tell is whether the sentence should exist at
+> all. `references/short-messages.md` is the receipt and the passes.
+
+For a short message, run `references/short-messages.md` FIRST: reply shape, hard cuts,
+sentence level. Then this loop runs on whatever survives, and the contraction sweep runs
+last on the finished text.
+
 ## Step 1 — Lint
 
 ```bash

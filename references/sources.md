@@ -26,6 +26,15 @@ They optimise for Turnitin rather than for a reader, and the prose measurably ge
 A detector score is not the deliverable, and "passes AI detection" is not a claim this
 skill will ever make.
 
+## The short-message passes
+
+`references/short-messages.md` distils a fifth humanizer: an agent skill built on the same
+Wikipedia catalogue and run daily on real client copy. Its reply-shape test (kill the
+point-by-point mirror) and its mechanical contraction sweep are not in any of the public
+humanizers above, and neither is the curator-voice kill list. What survives the passes is
+the author's, not the catalogue's: a hard cut is content the writer decides against, not a
+word the regex flags.
+
 ## The copywriting principles
 
 - **Steve Krug**, *Don't Make Me Think* (2000) — principle 1.
