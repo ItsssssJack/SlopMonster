@@ -1,0 +1,23 @@
+{
+  "name": "slopmonster",
+  "version": "1.0.0",
+  "description": "Turn AI-written copy into copy a human would ship. A regex scorer that grades a draft and exits red below full marks, plus the rewrite loop and a rival-model cleanse step that strips the accent the writing model cannot hear.",
+  "author": {
+    "name": "Jack",
+    "url": "https://github.com/ItsssssJack"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/ItsssssJack/SlopMonster",
+  "repository": "https://github.com/ItsssssJack/SlopMonster",
+  "keywords": [
+    "writing",
+    "copy",
+    "linter",
+    "humanize",
+    "de-slop",
+    "ai-detection",
+    "editing",
+    "landing-page",
+    "readme"
+  ]
+}

@@ -21,6 +21,11 @@ jobs:
       - name: Cleanse split tests
         run: bash tools/test_cleanse.sh
 
+      # The plugin skill is generated from SKILL.md. Two files that must say the
+      # same thing drift the moment one is edited alone, so regenerate and diff.
+      - name: Plugin skill is in sync
+        run: python3 tools/build_plugin_skill.py --check
+
       # This is the gate itself, copied as-is into your own repo: point it at
       # whatever file holds your shipped copy. Non-zero below 5/5 fails the build.
       - name: Lint the shipped copy

@@ -47,6 +47,22 @@ Every command and its exact output: [`examples/jasper-live-run.md`](examples/jas
 Their copy is quoted for criticism and remains theirs; the MIT licence below covers this
 repo's own code and prose.
 
+## Install as a Claude Code plugin
+
+```bash
+/plugin marketplace add ItsssssJack/SlopMonster
+/plugin install slopmonster
+```
+
+Then `/slopmonster` on any draft, or just ask for the copy to be de-slopped. The skill
+carries the same loop and calls the same scorer, so a run inside Claude Code and a run
+from the shell give the same score.
+
+The plugin skill at `skills/slopmonster/SKILL.md` is generated from `SKILL.md` by
+`tools/build_plugin_skill.py`, which rewrites every repo path to `${CLAUDE_PLUGIN_ROOT}`
+because an installed plugin runs from your project, not from this checkout. Edit the root
+`SKILL.md`. The build gate regenerates the copy and fails on a diff.
+
 ## Quick start
 
 ```bash
@@ -296,6 +312,9 @@ SKILL.md                            the agent skill — the whole loop as instru
 tools/deslop.py                     the scorer. stdlib, no deps, exits red below 5/5
 tools/test_deslop.py                regression suite. run it after touching any regex
 tools/cleanse.sh                    rival-model cleanse, auto-routed, time-bound
+tools/build_plugin_skill.py         generates the plugin skill from SKILL.md; CI diffs it
+.claude-plugin/                     plugin and marketplace manifests for Claude Code
+skills/slopmonster/SKILL.md         generated plugin skill. do not edit, edit SKILL.md
 .github/workflows/slop.yml          the build gate, ready to copy
 prompts/cleanse.txt                 the exact instruction the cleanse model gets
 references/signs-of-ai-writing.md   the full catalogue: 2 vocab tiers, 8 shapes, cadence, rhythm, proof

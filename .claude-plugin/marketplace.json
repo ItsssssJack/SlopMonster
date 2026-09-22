@@ -1,0 +1,25 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "slopmonster",
+  "owner": {
+    "name": "ItsssssJack",
+    "url": "https://github.com/ItsssssJack"
+  },
+  "metadata": {
+    "description": "SlopMonster: lint AI tells out of copy, rewrite, cleanse with a rival model, lint again."
+  },
+  "plugins": [
+    {
+      "name": "slopmonster",
+      "source": "./",
+      "description": "Turn AI-written copy into copy a human would ship. Lint for AI tells, rewrite, cleanse with a rival model, lint again.",
+      "author": {
+        "name": "Jack",
+        "url": "https://github.com/ItsssssJack"
+      },
+      "category": "writing",
+      "homepage": "https://github.com/ItsssssJack/SlopMonster",
+      "license": "MIT"
+    }
+  ]
+}
