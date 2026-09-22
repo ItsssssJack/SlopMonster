@@ -1,19 +1,18 @@
 # SlopMonster
 
-![The five SlopMonster mascots in a line-up, one for each rule it scores you on](docs/img/hero.png)
+![The SlopMonster mascots in a line-up, one per rule the scorer grades you on](docs/img/hero.png)
 
 **Turn AI-written copy into copy a human would ship.**
 
 AI writing has a smell. `delve`, `seamless`, `unlock`, `it's not just a tool, it's a
-journey`. Readers catch it now, and a page that smells of it is a page they stop
-trusting.
+journey`. Readers catch it now. A page that smells of it loses them.
 
 Most tools that fix this are built on the same public research. This one adds the two
 things the others skip.
 
-**It scores your copy out of 5 and it can fail your build.** No opinions, no vibes, just
-patterns. Developers call this a linter. Everyone else can call it a checker that will
-not let you ship.
+**It scores your copy out of 6 and it can fail your build.** No opinions, no vibes, just
+patterns. It is a linter for prose: it reads the copy, names what it found, and exits
+non-zero below full marks.
 
 **A rival model does the cleaning.** If Claude wrote the draft, GPT cleans it. A model
 cannot hear its own accent, the same way you cannot hear yours.
@@ -24,10 +23,10 @@ and judge.
 ## The loop
 
 ```
-1. SCORE     tools/deslop.py     marks it out of 5, exits red below 5. Patterns, no opinions.
+1. SCORE     tools/deslop.py     marks it out of 6, exits red below 6. Patterns, no opinions.
 2. REWRITE   three passes        kill the vocabulary → kill the shapes → put a person back in
 3. CLEANSE   tools/cleanse.sh    a different model family strips the tells the first one wrote
-4. RESCORE   tools/deslop.py     ship only at 5/5
+4. RESCORE   tools/deslop.py     ship only at 6/6
 ```
 
 The scorer gets the first word and the last word, because the scorer is honest and the
@@ -40,8 +39,8 @@ A real run on seven verbatim sentences of Jasper.ai's live homepage (29 Aug 2026
 
 | | score |
 |---|---|
-| Their copy, as fetched | **3/5** — `unlock`, `empower`, four rule-of-three lists |
-| After one pass through this loop | **5/5** — meaning intact, length within 10%, nothing invented |
+| Their copy, as fetched | **4/6** — `unlock`, `empower`, `intuitive`, four rule-of-three lists |
+| After one pass through this loop | **6/6** — meaning intact, length within 10%, nothing invented |
 
 Every command and its exact output: [`examples/jasper-live-run.md`](examples/jasper-live-run.md).
 Their copy is quoted for criticism and remains theirs; the MIT licence below covers this
@@ -54,7 +53,7 @@ git clone https://github.com/ItsssssJack/SlopMonster && cd SlopMonster
 
 # score anything
 python3 tools/deslop.py --text "It's not just a tool, it's a game-changing journey."
-# → score 3/5, names both tells, exits 1
+# → score 4/6, names both tells, exits 1
 
 # score a built page (reads only what a visitor can SEE)
 python3 tools/deslop.py index.html
@@ -73,7 +72,7 @@ python3 tools/deslop.py index.html --allow-proof
 python3 tools/test_deslop.py
 ```
 
-The catalogue is English only. Copy in another language scores 5/5 because the scorer
+The catalogue is English only. Copy in another language scores 6/6 because the scorer
 cannot read it, not because it is clean.
 
 No dependencies. The scorer is stdlib Python. The cleanse script needs one AI CLI
@@ -106,10 +105,10 @@ capable of adding new ones while it does.
 
 ## What the scorer hunts
 
-Five groups. Trip one and you lose a point. Below 5/5 the command exits red, so a build can
+Six groups. Trip one and you lose a point. Below 6/6 the command exits red, so a build can
 stop on it.
 
-Four groups strip the AI accent. The fifth asks whether the line sells anything.
+Five groups strip the AI accent. The proof rule asks whether the line sells anything.
 
 Every before and after below is a real line from the Ridgeline Roofing build. Struck
 through is what the first draft said. Bold is what shipped. The full record:
@@ -202,7 +201,7 @@ crying wolf, and the next person would turn the scorer off.
 
 ![Rule 5, sales and marketing: the rewrite built on Krug, Priestley and Hormozi](docs/img/rule-5-conversion.png)
 
-**5. Sales & marketing.** The first four rules get the robot out. This one asks the harder
+**5. Sales & marketing.** The other five rules get the robot out. This one asks the harder
 question. Does the line sell anything?
 
 Clean copy that says nothing is still a dead page. Two things run here.
@@ -213,7 +212,7 @@ business has not earned. The scorer flags any number sitting next to a people-no
 seconds. A miss puts a claim on your site that you cannot back. If your number is real and
 you can evidence it, `--allow-proof` drops it to a warning and still prints the hits.
 
-Fake proof is a sales failure before it is a writing failure. Nobody buys from a page they
+Fake proof loses the sale before it ever loses the reader. Nobody buys from a page they
 have caught lying.
 
 > ~~Loved by 10,000+ happy homeowners.~~
@@ -235,6 +234,44 @@ not go on the page.
    do overlays" positions you and disqualifies the wrong customer in one line.
 4. **The lines that were already good.** "From first call to final nail" arrived written in
    the wireframe and beat every rewrite. It stayed.
+
+**6. Aphoristic clause-pairing.** The one rule that is not looking for a word.
+
+Rules 1 to 5 all hunt something lexical: a banned word, a fixed template, a punctuation
+count. A lot of what reads as AI is none of those. It is a rhythm. Two short clauses
+stitched together with no logical connector, where the second echoes, relabels or one-ups
+the first. It sounds like a conclusion, and no argument was made.
+
+This README scored a clean 5/5 for months while doing it in four separate paragraphs. That
+is what [issue #10](https://github.com/ItsssssJack/SlopMonster/issues/10) reported, and
+the four sentences it named are rewritten above.
+
+Three shapes score:
+
+- **relabel-pairing** — `X calls it A. Y calls it B.` A manufactured contrast between what
+  two audiences call one thing.
+- **ordinal-drumbeat** — a sentence opens on a count, the next opens on `The <ordinal>`
+  with the noun dropped. Counting used as rhythm, not as information.
+- **noun-chiasmus** — the same head noun opens and closes one clause, so the sentence
+  arrives back where it started instead of developing.
+
+> ~~a page that smells of it is a page they stop trusting~~
+> **A page that smells of it loses them.**
+> The chiasmus sounds earned. It is the same noun twice with a copula between.
+
+> ~~Four groups strip the AI accent. The fifth asks whether the line sells anything.~~
+> **Five groups strip the AI accent. The proof rule asks whether the line sells anything.**
+> Name the thing. The ordinal was carrying rhythm and no information.
+
+Two looser shapes print under their own heading and **never move the score**.
+**Echo-pairing** is a significant word shared across two adjacent short clauses.
+**Flat-splice** is a flat assertion glued to a flat consequence by `and`. Measured against
+ordinary business English they fire often enough that gating on them would be exactly the
+wolf-crying that gets a linter switched off. Treat that block as a reading aid.
+
+Both scored and advisory shapes only ever pair sentences that are genuinely adjacent prose.
+A heading, a bullet, a table cell and a blockquote marker each end the run, so two list
+items are never read as a pair.
 
 **The named work behind the rewrite:**
 
@@ -275,7 +312,7 @@ one mistake with no route back.
 And this skill will never claim to "beat AI detectors". Detectors are noise. The target
 is a human reader's gut.
 
-This file passes its own scorer. `python3 tools/deslop.py README.md` scores **5/5**, and
+This file passes its own scorer. `python3 tools/deslop.py README.md` scores **6/6**, and
 it is the same catalogue and the same regexes that score your landing page. Nothing was
 softened to get there. The specimens are marked as literals, in `code` or struck through,
 and the prose around them had to be written clean like anything else.
@@ -293,16 +330,16 @@ deliberately excluded.
 
 ```
 SKILL.md                            the agent skill — the whole loop as instructions
-tools/deslop.py                     the scorer. stdlib, no deps, exits red below 5/5
+tools/deslop.py                     the scorer. stdlib, no deps, exits red below 6/6
 tools/test_deslop.py                regression suite. run it after touching any regex
 tools/cleanse.sh                    rival-model cleanse, auto-routed, time-bound
 .github/workflows/slop.yml          the build gate, ready to copy
 prompts/cleanse.txt                 the exact instruction the cleanse model gets
-references/signs-of-ai-writing.md   the full catalogue: 2 vocab tiers, 8 shapes, cadence, rhythm, proof
+references/signs-of-ai-writing.md   the full catalogue: 2 vocab tiers, 8 shapes, cadence, rhythm, proof, pairing
 references/principles.md            the five rewrite principles, each with a real pair
 references/sources.md               every source this stands on
 examples/ridgeline-roofing.md       full site build, every line before → after
-examples/jasper-live-run.md         unedited live run: 3/5 → 5/5 on a real page
+examples/jasper-live-run.md         unedited live run: 4/6 → 6/6 on a real page
 ```
 
 MIT. Same as the humanizers it stands on.

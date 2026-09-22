@@ -8,7 +8,7 @@
 This reads only what a visitor can SEE: it strips <script>, <style>, and every HTML
 tag, so it scores the words on the page rather than the markup around them.
 
-Scoring is out of 5. Below 5 exits non-zero. That is deliberate — "mostly clean"
+Scoring is out of 6. Below 6 exits non-zero. That is deliberate — "mostly clean"
 copy is how a page ends up sounding like every other AI page on the internet.
 """
 import html as _html   # aliased: `visible_text` takes a parameter named `html`
@@ -127,6 +127,22 @@ PROOF = re.compile(
     re.I)
 
 
+def _sentences(text):
+    """Split on terminal punctuation. Every rule that judges a sentence uses this."""
+    return re.split(r'(?<=[.!?])\s+', text)
+
+
+def _windows(s, size=220):
+    """A sentence in fixed slices.
+
+    UI strings — nav items, quiz options, labels — carry no terminal
+    punctuation, so a naive split merges a whole page into one "sentence" and
+    any density rule then fires on every page. Slicing caps the damage.
+    """
+    for i in range(0, max(1, len(s)), size):
+        yield s[i:i + size]
+
+
 def normalise(t):
     """Fold the typographic variants back to the plain ones the rules match.
 
@@ -208,8 +224,244 @@ def markdown_prose(md):
     return normalise(md)
 
 
+# ── rule 6: aphoristic clause-pairing ────────────────────────────────────────
+# Rules 1-5 all hunt something lexical: a banned word, a fixed template, a
+# punctuation count. Much of what makes AI prose read as AI is none of those.
+# It is a rhythm. Two short clauses stitched together with no logical connector,
+# where the second echoes, relabels or one-ups the first. This README scored a
+# clean 5/5 while doing it in four separate paragraphs. See issue #10.
+#
+# Three shapes score. Two more print and deliberately do not move the score:
+# they are the loose end of the same family, and measured against ordinary
+# business English they fire often enough that a hard gate built on them would
+# cry wolf. The advisory block is a reading aid, not a verdict.
+
+MAX_SCORE = 6
+
+# A space-padded full stop is markdown structure, not a sentence ending. A real
+# terminator is glued to its word ("ship."); `markdown_prose` writes " . " for a
+# heading, a bullet, a blockquote marker and a table cell. So two bullets never
+# read as an adjacent pair, and a heading never pairs with the body under it.
+# HTML never produces the shape, so this costs the `visible_text` path nothing.
+BARRIER = re.compile(r'(?:^|\s)\.(?:\s|$)')
+
+# The sentence split breaks after "e.g." and "No." too. Rules 3 and 4 never
+# cared, because they judge one sentence. Rule 6 reaches across the break.
+ABBREV = frozenset('e.g. i.e. etc. vs. cf. no. fig. ch. pp. mr. mrs. dr. st.'.split())
+
+_WORD = re.compile(r"[A-Za-z][A-Za-z'-]*")
+
+# Function words, too common to mean anything when two clauses share one.
+PAIRING_STOP = frozenset("""
+about above after again against almost along already also although always among another
+because become becomes been before behind being below beside besides better between beyond
+both bring cannot come could does doing done down during each either enough even ever
+every everything except first from further getting given gives going gone have having
+here hers himself his however inside instead into itself just keep kept like made make
+makes making many maybe might more most much must myself near needs neither never next
+nobody none nothing often once only other others ought ourselves outside over past
+perhaps please quite rather really same seems several shall should simply since some
+something sometimes soon still such taken takes than that their theirs them themselves
+then there these they thing things this those though through thus together toward under
+until upon used uses using very want well went were what when where whether which while
+whole whose will with within without would your yours yourself
+""".split())
+
+# "Developers call this a linter. Everyone else can call it a checker that will
+# not let you ship." Two adjacent sentences that each relabel the same thing for
+# a different audience. The object must be third person, which is what keeps
+# every "call us today" out of it.
+CALL = re.compile(
+    r"^(.*?)\b(?:can|could|would|will|may|might)?\s*calls?\s+"
+    r"(?:it|this|that|these|those|them)\s+"
+    r"(?:a|an|the)?\s*([a-z][a-z-]{2,})", re.I)
+
+# The guard that keeps the function-invocation sense out: "The client calls it
+# once at startup. The server calls it again on reconnect." is not a relabel.
+CALL_ADVERB = frozenset("""
+once twice again back later directly first last home out off now then early often
+daily nightly twice repeatedly asynchronously synchronously internally externally
+""".split())
+
+_ORDINALS = 'first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth'
+
+# "Four groups strip the AI accent. The fifth asks whether the line sells
+# anything." A count opens one sentence and an ordinal opens the next. Counting
+# used as rhythm rather than as information.
+COUNT_OPEN = re.compile(r'^\s*(?:one|two|three|four|five|six|seven|eight|nine|ten|\d+)\s+[a-z]',
+                        re.I)
+ORDINAL_OPEN = re.compile(rf'^\s*the\s+({_ORDINALS})\s+([\w-]+)', re.I)
+
+# The whole precision of the rule sits here: the ordinal must be pronominal,
+# with its noun elided. Slop writes "The fifth asks whether…". Ordinary prose
+# writes "The fifth test is the slow one", and that must stay clean.
+ORDINAL_NOUN = frozenset("""
+thing things item items group groups step steps rule rules section sections test tests
+case cases option options example examples chapter chapters pass passes line lines file
+files field fields column columns row rows point points note notes version versions word
+words source sources tool tools model models team teams user users one ones people
+person sentence sentences paragraph paragraphs release releases commit commits
+""".split())
+ORDINAL_VERB = frozenset("""
+is was are were does do did has have had goes comes came asks adds matters counts sells
+tells makes takes gets says can cannot will must should would could might shows means
+answers explains checks catches runs reads writes holds stops starts ends belongs
+""".split())
+
+# "a page that smells of it is a page they stop trusting." The same head noun
+# opens and closes the clause, so the sentence arrives back where it started
+# instead of developing.
+#
+# Both determiners must be INDEFINITE, and that restriction is the rule. The
+# definite form is a referential identity claim carrying real information —
+# "The default branch in that repo is the branch the workflow checks out",
+# "The first argument you pass is the argument the callback receives". Five of
+# five ordinary technical sentences of that shape fire on the naive version.
+# A linter that cries wolf gets switched off.
+#
+# The two-modifier tolerance is what sees "a sales failure before it is a
+# writing failure", and it is only safe because of the indefinite restriction.
+# The two decisions are coupled. Do not keep one without the other.
+#
+# "A backup that is not restored is not a backup" stays clean for free: the
+# determiner must follow the copula immediately, and negation puts `not` there.
+CHIASMUS = re.compile(
+    r'\b(?:a|an)\s+(?:[a-z]+\s+){0,2}?([a-z]{4,})\b'
+    r'[^.!?]{2,60}?'
+    r'\b(?:is|was|are|were)\s+(?:a|an)\s+(?:[a-z]+\s+){0,2}?\1\b'
+    r'[^.!?]{0,60}', re.I)
+
+# A subordinator IS the logical connector whose absence defines a flat splice.
+SPLICE_SUBORDINATOR = re.compile(
+    r'\b(?:because|since|so|then|therefore|thus|which|when|while|if|unless|after|'
+    r'before|although|though|whereas|until|once)\b', re.I)
+SPLICE_SUBJECT = re.compile(r"^(?:a|an|the|it|this|that|they|we|you|i|he|she|there)\b|^[A-Z]")
+
+ADVISORY_CAP = 5
+
+
+def _words(s):
+    return _WORD.findall(s)
+
+
+def _content(s):
+    """The words in a clause that could carry an echo. Everything else is glue."""
+    return {w.lower() for w in _words(s)
+            if len(w) >= 5 and w.lower() not in PAIRING_STOP}
+
+
+def _units(text):
+    """Sentences that are real copy, with markdown structure removed entirely.
+
+    A segment touching a space-padded full stop came from a heading, a bullet,
+    a table cell or a blockquote marker. It is dropped rather than kept, because
+    keeping it would let a list item pair with the sentence printed next to it.
+    """
+    for s in _sentences(text):
+        s = s.strip()
+        if not s or BARRIER.search(s) or not _WORD.search(s):
+            continue
+        yield s
+
+
+def _pairs(units):
+    """Adjacent sentences, minus the ones the split got wrong.
+
+    A first member ending in an abbreviation is not a finished sentence, so the
+    thing after it is not the next sentence.
+    """
+    for a, b in zip(units, units[1:]):
+        tail = a.split()[-1].lower() if a.split() else ''
+        if tail in ABBREV or (len(tail) <= 3 and tail.endswith('.')):
+            continue
+        yield a, b
+
+
+def _relabel(s):
+    """The label a clause hangs on a thing, and who is doing the hanging."""
+    if re.match(r'^\s*call\b', s, re.I):
+        return None                      # an imperative: "Call the office by nine."
+    m = CALL.search(s)
+    if not m:
+        return None
+    subject, label = m.group(1).strip().lower(), m.group(2).lower()
+    if label in CALL_ADVERB:
+        return None                      # "the client calls it once at startup"
+    return subject, label
+
+
+def _ordinal_drumbeat(a, b):
+    if len(_words(a)) > 14 or len(_words(b)) > 16:
+        return False
+    if not COUNT_OPEN.match(a):
+        return False
+    m = ORDINAL_OPEN.match(b)
+    if not m:
+        return False
+    nxt = m.group(2).lower()
+    if nxt in ORDINAL_NOUN:
+        return False                     # "The fourth test is the slow one."
+    return nxt in ORDINAL_VERB or (nxt.endswith(('s', 'ed')) and len(nxt) > 3)
+
+
+def clause_pairing(text):
+    """Rule 6. Returns (scored, advisory), each a list of (label, snippet)."""
+    scored, advisory = [], []
+    units = list(_units(text))
+    pairs = list(_pairs(units))
+
+    for a, b in pairs:
+        ra, rb = _relabel(a), _relabel(b)
+        if (ra and rb and ra[0] != rb[0] and ra[1] != rb[1]
+                and len(_words(a)) <= 14 and len(_words(b)) <= 14):
+            scored.append(('relabel-pairing', f'{a[:38]} … {b[:38]}'))
+        if _ordinal_drumbeat(a, b):
+            scored.append(('ordinal-drumbeat', f'{a[:38]} … {b[:38]}'))
+
+    for s in units:
+        m = CHIASMUS.search(s)
+        if m:
+            scored.append((f'noun-chiasmus on "{m.group(1).lower()}"', m.group(0)[:70].strip()))
+
+    # A word the whole document is about repeats for honest reasons. Damping on
+    # document frequency is what takes the advisory block from unreadable to
+    # worth reading: `roof`, `scorer`, `model` and `copy` stop counting.
+    freq = {}
+    for s in units:
+        for w in _content(s):
+            freq[w] = freq.get(w, 0) + 1
+
+    for a, b in pairs:
+        wa, wb = _words(a), _words(b)
+        if not (3 <= len(wa) <= 12 and 3 <= len(wb) <= 12):
+            continue
+        shared = {w for w in _content(a) & _content(b)
+                  if freq.get(w, 0) <= 3 and not any(c.isdigit() for c in w)}
+        if shared:
+            advisory.append((f"echo-pairing on \"{sorted(shared)[0]}\"",
+                             f'{a[:33]} … {b[:33]}'))
+
+    for s in units:
+        halves = re.split(r',\s+and\s+', s)
+        if len(halves) != 2:
+            continue
+        left, right = halves[0].strip(), halves[1].strip(' .!?')
+        if ',' in left or ',' in right:
+            continue                     # three items is a tricolon, rule 4's job
+        if not (5 <= len(_words(left)) <= 14 and 5 <= len(_words(right)) <= 14):
+            continue
+        if not SPLICE_SUBJECT.match(right) or SPLICE_SUBORDINATOR.search(right):
+            continue
+        if _content(left) & _content(right):
+            continue                     # that is an echo, already reported above
+        advisory.append(('flat-splice', s[:70].strip()))
+
+    return scored, advisory[:ADVISORY_CAP]
+
+
 def audit(text):
-    hits = {'vocab': [], 'phrases': [], 'punctuation': [], 'rhythm': [], 'proof': []}
+    hits = {'vocab': [], 'phrases': [], 'punctuation': [], 'rhythm': [], 'proof': [],
+            'pairing': [], 'echo': []}
     low = text.lower()
 
     for w in VOCAB:
@@ -232,16 +484,14 @@ def audit(text):
     # labels) carry no terminal punctuation, so a naive sentence split merges the
     # whole page into one "sentence" and this rule fires on every page. Ask me how
     # I know. A linter that cries wolf gets switched off.
-    for s in re.split(r'(?<=[.!?])\s+', text):
-        for i in range(0, max(1, len(s)), 220):
-            window = s[i:i + 220]
+    for s in _sentences(text):
+        for window in _windows(s):
             if window.count('—') >= 2:
                 hits['punctuation'].append(('two or more em-dashes in one sentence',
                                             window[:70].strip()))
                 break
-    for s in re.split(r'(?<=[.!?])\s+', text):
-        for i in range(0, max(1, len(s)), 220):
-            window = s[i:i + 220]
+    for s in _sentences(text):
+        for window in _windows(s):
             found = COMPOUND.findall(window)
             if len(found) >= COMPOUND_FLOOR:
                 hits['punctuation'].append((f'{len(found)} hyphenated compounds stacked '
@@ -271,18 +521,25 @@ def audit(text):
     for m in PROOF.finditer(text):
         hits['proof'].append(m.group(0).strip())
 
+    hits['pairing'], hits['echo'] = clause_pairing(text)
+
     return hits
 
 
 def report(hits, label='', allow_proof=False):
-    weights = {'vocab': 1, 'phrases': 1, 'punctuation': 1, 'rhythm': 1, 'proof': 1}
+    weights = {'vocab': 1, 'phrases': 1, 'punctuation': 1, 'rhythm': 1, 'proof': 1,
+               'pairing': 1,
+               # Weight 0 is the same mechanism --allow-proof already uses: the
+               # hits print, they just never move the score. The two loose
+               # clause-pairing shapes live here permanently.
+               'echo': 0}
     if allow_proof:
         # The one rule a regex cannot judge: it sees a number beside a noun, not
         # whether you can evidence it. --allow-proof still prints the hits, but
         # stops a true, defensible claim from blocking a green build forever.
         weights['proof'] = 0
     failed = [k for k, v in hits.items() if v]
-    score = 5 - sum(weights[k] for k in failed)
+    score = MAX_SCORE - sum(weights[k] for k in failed)
     score = max(0, score)
 
     titles = {
@@ -291,11 +548,13 @@ def report(hits, label='', allow_proof=False):
         'punctuation': 'punctuation cadence',
         'rhythm': 'rule-of-three rhythm',
         'proof': 'possible invented proof',
+        'pairing': 'aphoristic clause-pairing',
+        'echo': 'clause echo and flat splice (advisory, not scored)',
     }
 
     if label:
         print(f'── {label}')
-    for k in ('proof', 'phrases', 'vocab', 'punctuation', 'rhythm'):
+    for k in ('proof', 'phrases', 'vocab', 'punctuation', 'rhythm', 'pairing', 'echo'):
         if not hits[k]:
             continue
         print(f'  {titles[k]}:')
@@ -305,8 +564,8 @@ def report(hits, label='', allow_proof=False):
         if len(hits[k]) > 8:
             print(f'    · …and {len(hits[k]) - 8} more')
 
-    print(f'\n  score {score}/5', end='  ')
-    print('CLEAN' if score == 5 else 'needs a cleanse')
+    print(f'\n  score {score}/{MAX_SCORE}', end='  ')
+    print('CLEAN' if score == MAX_SCORE else 'needs a cleanse')
     return score
 
 
@@ -362,4 +621,4 @@ if __name__ == '__main__':
         sys.exit('deslop: no visible copy to score — empty input')
 
     print(f'{len(text.split())} words of visible copy\n')
-    sys.exit(0 if report(audit(text), allow_proof=allow_proof) == 5 else 1)
+    sys.exit(0 if report(audit(text), allow_proof=allow_proof) == MAX_SCORE else 1)

@@ -13,18 +13,25 @@ $ python3 tools/deslop.py --text "…seven sentences from the live page…"
   AI vocabulary:
     · unlock  (1)
     · empower  (1)
+    · intuitive  (1)
   rule-of-three rhythm:
     · rule-of-three list  (contacts, leads, and opportunities)
     · rule-of-three list  (briefs, insights, and channel)
     · rule-of-three list  (tips, advice, and practical)
     · rule-of-three list  (stories, tools, and expert)
 
-  score 3/5  needs a cleanse
+  score 4/6  needs a cleanse
 ```
 
 These seven sentences are the scored sample. The full homepage fetch, which includes nav
-and menu strings, scored 2/5. Only the 3/5 above is reproducible from the text in this
-file, so 3/5 is the number the README quotes.
+and menu strings, scored lower still. Only the score above is reproducible from the text
+in this file, so that is the number the README quotes.
+
+The run happened on the scorer as it stood that day, and both blocks above are re-derived
+from the copy in this file every time a rule changes. The catalogue has grown since:
+`intuitive` was added to the vocabulary list, and rule 6 added a sixth point to the
+denominator without firing on either draft. So the original scores 4/6 today where it
+scored 3/5 then. The copy did not move. The scorer did.
 
 ## The original
 
@@ -74,10 +81,10 @@ em dashes. It cut "rich product experience". It kept the rough "And" opening.
 $ python3 tools/deslop.py --text "$(cat cleansed.txt)"
 119 words of visible copy
 
-  score 5/5  CLEAN
+  score 6/6  CLEAN
 ```
 
-**3/5 → 5/5, meaning intact, length within 10%, nothing invented.** That is the whole
+**4/6 → 6/6, meaning intact, length within 10%, nothing invented.** That is the whole
 loop: lint, rewrite, cleanse, re-lint.
 
 Note what the cleanse did *not* fix: the copy is now clean, but it is still generic —

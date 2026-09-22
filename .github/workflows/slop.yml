@@ -22,6 +22,15 @@ jobs:
         run: bash tools/test_cleanse.sh
 
       # This is the gate itself, copied as-is into your own repo: point it at
-      # whatever file holds your shipped copy. Non-zero below 5/5 fails the build.
+      # whatever file holds your shipped copy. Non-zero below 6/6 fails the build.
       - name: Lint the shipped copy
         run: python3 tools/deslop.py --text "$(cat examples/gate-sample.txt)"
+
+      # The README claims it passes the scorer it documents. Asserting that in
+      # prose is how it quietly stopped being true; rule 6 caught four sentences
+      # of its own cadence. Enforce it instead.
+      - name: The docs pass their own scorer
+        run: |
+          for f in README.md SKILL.md references/*.md examples/*.md; do
+            python3 tools/deslop.py "$f"
+          done

@@ -81,6 +81,27 @@ beats any fabricated number, and it has the advantage of being true.
 
 ---
 
+## 6 · Aphoristic clause-pairing
+
+The only entry here that is not a word or a template. Two short clauses stitched together
+with no logical connector, where the second echoes, relabels or one-ups the first. It has
+the shape of a conclusion without an argument underneath it.
+
+- **relabel-pairing.** `X calls it A. Y calls it B.` A manufactured contrast between what
+  two audiences call one thing. Scored.
+- **ordinal-drumbeat.** A sentence opens on a count, the next opens on `The <ordinal>`
+  with the noun dropped. Counting used as rhythm rather than information. Scored.
+- **noun-chiasmus.** The same head noun opens and closes one clause, so the sentence
+  arrives back where it started. Both halves must be indefinite: `the X ... is the X` is
+  usually a real identity claim and stays clean. Scored.
+- **echo-pairing.** Any significant word shared between two adjacent short clauses.
+  Advisory, never scored.
+- **flat-splice.** A flat assertion glued to a flat consequence by `and`, with no repeated
+  word and no relabelling. Advisory, never scored.
+
+The fix is never a synonym. Either make the second clause do work the first did not, or
+delete it. Most of the time it is the second clause that goes.
+
 ## After the tells are gone
 
 Removing tells leaves clean, dead copy. Put a person back in:

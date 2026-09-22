@@ -5,6 +5,8 @@ Two directions, and the second is the one that matters. It is easy to widen a
 regex until it catches everything, so every widening here is paired with a
 must-stay-clean case that would break if the rule got greedy.
 """
+import contextlib
+import io
 import re
 import subprocess
 import sys
@@ -13,7 +15,7 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from deslop import (VOCAB, VOCAB_EXACT, audit, visible_text, _root_pattern,
-                    markdown_prose, PROOF)
+                    markdown_prose, PROOF, MAX_SCORE, clause_pairing, report)
 
 fails = []
 
@@ -25,6 +27,28 @@ def check(name, cond, detail=''):
 
 def groups(text):
     return {k for k, v in audit(text).items() if v}
+
+
+# Rule 6 ships an advisory key that never moves the score, so a non-empty
+# `echo` is not a failure. Assertions about what a clean page scores have to
+# ask about the scored keys, or they break on a finding that costs nothing.
+ADVISORY = {'echo'}
+
+
+def scored_groups(text):
+    return groups(text) - ADVISORY
+
+
+def report_score(text):
+    """The number the CLI would print, without the printing."""
+    with contextlib.redirect_stdout(io.StringIO()):
+        return report(audit(text))
+
+
+def pairing(text):
+    """The rule-6 labels alone, scored and advisory kept apart."""
+    scored, advisory = clause_pairing(text)
+    return ([lbl for lbl, _ in scored], [lbl for lbl, _ in advisory])
 
 
 # ── every catalogue word still fires in its own base form ───────────────────
@@ -131,11 +155,17 @@ r = subprocess.run([sys.executable, f'{here}/deslop.py', _cjk],
 check('non-cp1252 snippet does not traceback', 'Traceback' not in r.stderr, r.stderr[-160:])
 check('non-cp1252 snippet still scores', 'score' in r.stdout, r.stdout[:140])
 
-# ── clean human copy still scores 5/5 ───────────────────────────────────────
+# ── clean human copy still scores full marks ────────────────────────────────
 for ok in ('Six nails per shingle, every shingle.',
            'You get a written scope and a fixed number before anyone climbs a ladder.',
            'We do not do overlays. If the roof needs replacing, it gets stripped.'):
-    check('clean copy stays clean', not groups(ok), f'{ok} -> {groups(ok)}')
+    check('clean copy stays clean', not scored_groups(ok), f'{ok} -> {scored_groups(ok)}')
+
+# The repo's own flagship line repeats `shingle` across a comma. It is two words
+# after the comma, so the three-word floor on an echo unit is what keeps it
+# quiet. That floor is load-bearing, not decoration.
+check('flagship line is not even an advisory echo',
+      'echo' not in groups('Six nails per shingle, every shingle.'))
 
 # ── markdown: a literal is not copy ─────────────────────────────────────────
 # Every strip below is paired with a case that must survive it, because the
@@ -238,6 +268,97 @@ check('README safe tricolon example stays clean',
       'rhythm' not in groups('Inspection, repair and replacement for homes and commercial buildings.'))
 check('README tricolon example still fires',
       'rhythm' in groups('Trusted, reliable and built to last.'))
+
+# ── rule 6: aphoristic clause-pairing ───────────────────────────────────────
+# The first rule that judges shape rather than words, so it is the easiest one
+# to make greedy. Every positive below is from issue #10 verbatim; every
+# negative is ordinary business or technical English that a naive version of the
+# same rule catches. The negatives are the point.
+
+check('relabel-pairing fires',
+      'relabel-pairing' in pairing(
+          'Developers call this a linter. Everyone else can call it a checker '
+          'that will not let you ship.')[0])
+check('relabel-pairing fires without an article',
+      'relabel-pairing' in pairing('Founders call it hustle. Investors call it burn rate.')[0])
+# Telephone and imperative senses. Every trade page on earth says this.
+check('imperative call is not a relabel',
+      not pairing('Call the office before nine. Call again if nobody answers.')[0])
+# Function-invocation sense: the adverb stoplist is the only thing saving this.
+check('calls it once/again is not a relabel',
+      not pairing('The client calls it once at startup. '
+                  'The server calls it again on reconnect.')[0])
+# The word ceiling is the rule, not decoration: a long second clause is prose.
+check('a long second clause is not a relabel',
+      not pairing('Some people call it a bug. Others call it a bug as well, and they are '
+                  'right because the spec says the field is optional.')[0])
+check('one relabel is definitional, not a pair',
+      not pairing('Engineers call this idempotency. '
+                  'It means a repeated request changes nothing.')[0])
+
+check('ordinal-drumbeat fires',
+      'ordinal-drumbeat' in pairing(
+          'Four groups strip the AI accent. '
+          'The fifth asks whether the line sells anything.')[0])
+# The ordinal must be pronominal. Keeping its noun makes it ordinary writing.
+check('ordinal keeping its noun stays clean',
+      not pairing('Four tests cover the parser. The fourth test is the slow one.')[0])
+check('ordinal followed by "one" stays clean',
+      not pairing('Three files changed in this commit. '
+                  'The third one is generated, so ignore it.')[0])
+# The count must open the sentence. This is the commonest shape in release notes.
+check('a mid-sentence count stays clean',
+      not pairing('We ship four releases a year. The first ships in March.')[0])
+
+check('noun-chiasmus fires',
+      any('noun-chiasmus' in l for l in
+          pairing('A page that smells of it is a page they stop trusting.')[0]))
+check('noun-chiasmus fires across two modifiers',
+      any('noun-chiasmus' in l for l in
+          pairing('Fake proof is a sales failure before it is a writing failure.')[0]))
+# The indefinite restriction. A definite pair is a referential identity claim
+# carrying real information, and five of five of these fire without it.
+for ok in ('The default branch in that repo is the branch the workflow checks out.',
+           'The first argument you pass is the argument the callback receives.',
+           'The build that failed overnight is the build we shipped on Friday.',
+           'The number in the contract is the number we hold you to.',
+           'The only file that matters is the file the linter reads.'):
+    check('definite identity claim is not a chiasmus', not pairing(ok)[0], ok)
+# Negation puts `not` where the determiner has to be, so this costs nothing.
+check('negated tautology is not a chiasmus',
+      not pairing('A backup that is not restored is not a backup.')[0])
+
+# ── rule 6: markdown structure is a barrier, not an adjacency ────────────────
+# `markdown_prose` writes ' . ' for a heading, a bullet, a table cell and a
+# blockquote marker. Pairing across one would flag a list for a cadence nobody
+# wrote, which is the fastest way to get the whole linter switched off.
+check('a heading does not pair with the body under it',
+      not pairing(markdown_prose('## Four things, done properly\n'
+                                 'The fifth asks whether it holds.'))[0])
+check('two bullets are not an adjacent pair',
+      not pairing(markdown_prose('- Developers call this a linter\n'
+                                 '- Everyone else can call it a checker'))[0])
+
+# ── rule 6: the advisory shapes print but never score ───────────────────────
+advisory_only = ('The kickoff call ran forty minutes over, '
+                 'and the client paid the invoice early.')
+check('flat-splice is advisory', 'flat-splice' in pairing(advisory_only)[1])
+check('flat-splice never scores', 'pairing' not in scored_groups(advisory_only),
+      f'{advisory_only} -> {scored_groups(advisory_only)}')
+check('an advisory-only page still scores full marks',
+      report_score(advisory_only) == MAX_SCORE)
+
+# ── rule 6: the denominator moved and the CLI says so ───────────────────────
+r = subprocess.run([sys.executable, f'{here}/deslop.py', '--text',
+                    'Six nails per shingle, every shingle.'],
+                   capture_output=True, text=True, encoding='utf-8')
+check('clean copy exits 0', r.returncode == 0, r.stdout)
+check(f'the footer reads /{MAX_SCORE}', f'/{MAX_SCORE}  CLEAN' in r.stdout, r.stdout)
+r = subprocess.run([sys.executable, f'{here}/deslop.py', '--text',
+                    'A page that smells of it is a page they stop trusting.'],
+                   capture_output=True, text=True, encoding='utf-8')
+check('a clause-pairing hit exits red', r.returncode == 1, r.stdout)
+check('a clause-pairing hit is named', 'noun-chiasmus' in r.stdout, r.stdout)
 
 if fails:
     print(f'{len(fails)} FAILED\n')
