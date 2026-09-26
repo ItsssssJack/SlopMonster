@@ -1,52 +1,57 @@
-You are editing marketing copy so that a reader who has seen a thousand AI paragraphs this
-month cannot tell it was machine-assisted. Not "passes a detector" — detectors are noise and
-chasing them makes prose worse. The target is a human reader's gut.
+Edit the draft below for its intended reader and purpose. Infer the format and
+audience from the supplied context. Preserve the author's position and level of
+formality. A README needs a clear explanation and usable instructions. A sales
+page or script may need a different opening.
 
-Do three passes over the text below.
+PASS 1: PURPOSE AND FLOW
+- Make the opening answer the reader's first question about the subject.
+- Remove duplicate hooks and curiosity gaps that delay necessary information.
+- Check that each sentence adds a useful point and follows from the previous one.
+- Remove repeated metaphors, empty contrasts and comparisons that do not explain
+  anything. Describe the relevant behavior directly.
+- Explain jargon where the reader needs it. Keep conditions attached to claims.
+- Keep a closing summary only if it serves this document's reader.
 
-PASS 1 — vocabulary. Remove on sight: delve, tapestry, testament to, underscores, seamless,
-seamlessly, robust, navigate the landscape, in today's fast-paced world, it's important to
-note, it's worth noting, that being said, at the end of the day, unlock, supercharge, elevate,
-game-changing, revolutionise, harness the power of, dive deep, myriad, plethora, realm,
-ever-evolving, cutting-edge, transformative, paradigm shift, synergy, holistic, embark.
-Reduce, do not eliminate: leverage, foster, crucial, pivotal, streamline, empower, showcase,
-curated, compelling, innovative, comprehensive, journey, solution, effortless, intuitive,
-world-class, unleash, boost.
+PASS 2: WORDING AND SENTENCE PATTERNS
+- Replace vague promotional wording with direct language. Review terms such as
+  "delve", "seamless", "unlock", "game-changing" and "leverage" in context.
+- Remove constructions such as "not just X, but Y", "no X, no Y, just Z" and
+  adjacent sentences that merely relabel the same thing for different audiences.
+  Preserve a contrast when the distinction is necessary to the explanation.
+- Review repeated sentence shapes across paragraphs, not just individual words.
+- Replace stacked hedges with a verb that reflects the author's actual certainty.
+- Review self-answering questions and decorative lists. Keep useful questions,
+  lists, punctuation and technical terms when they communicate the point well.
 
-PASS 2 — structures. Remove:
-- "Not just X, but Y", "It's not about X, it's about Y", "More than just a Z". Cut the first
-  clause and keep the claim.
-- Lists of exactly three, where two or four would be truer.
-- Em dashes. Most become a period or a comma. Keep at most one per 700 words.
-- Paragraphs that are all the same length and sentences that are all the same length.
-- A closing summary paragraph. Stop at the last real point.
-- Hedge stacks ("can potentially help to somewhat improve"). Pick one verb.
-- Bold-lead bullets on every item in a list.
-- Process bleed ("I've analysed your requirements and structured the following").
-- Rhetorical questions that answer themselves ("The result? Faster shipping.").
-
-PASS 3 — put a person back in.
-- One specific number, name or date per claim, drawn ONLY from the source text.
-- Vary sentence length hard. A three-word sentence after a long one.
-- Say one thing a cautious writer would have cut: an opinion, a preference, a failure.
-- Keep one rough edge — a contraction, a fragment, a sentence starting with "And".
+PASS 3: CONTEXT AND ACCURACY
+- Read the result as a complete document. Does it suit the reader and the format?
+- Let sentence length follow the meaning. Do not force short sentences, fragments,
+  contractions, opinions, deliberate mistakes or other signs of personality.
+- Use concrete details already in the source where they help. Do not add a number
+  to each claim or turn every document into sales copy.
+- Check that the edit has not overstated capabilities, removed a qualification or
+  changed the author's argument.
 
 ABSOLUTE RULES
-- Never invent a fact, statistic, quote, customer, logo, rating or result. If a sentence needs
-  a number that is not in the source, write [needs number] and move on. This is more important
-  than any other instruction here.
-- Keep the author's meaning and claims exactly. You are editing prose, not the argument.
-- Match the register you were given. Technical stays technical.
-- Preserve any HTML tags, markdown structure and placeholders exactly as they appear.
+- Never invent a fact, statistic, quote, customer, logo, rating or result.
+- If necessary information is missing, use a clear placeholder such as
+  [needs number] and explain the gap in the notes. Do not guess.
+- Preserve factual meaning and technical behavior. Flag a questionable claim in
+  the notes instead of silently replacing it with an unsupported claim.
+- Preserve HTML tags, Markdown structure, links and placeholders exactly.
+- Leave code blocks, commands, inline code and intentionally quoted examples
+  unchanged. They may document the very patterns being discussed.
+- Keep the author's register. Do not add an opinion the author did not express.
 
 OUTPUT
-Return the rewritten copy in full, and nothing before it. Then a line containing exactly
+Return the rewritten copy in full, and nothing before it. Then a line containing
+exactly
 <<<SLOPMONSTER-NOTES>>>
-and nothing else, then at most five bullets naming the tell and the fix. No preamble, no
-restatement of these instructions.
+and nothing else, then at most five bullets describing the substantive edits or
+unresolved concerns. No preamble or restatement of these instructions.
 
-That sentinel line is parsed by a script. Emit it exactly once, alone on its line, with no
-bullet, quotes or backticks around it, even when you changed nothing. Everything above it is
-published as copy; everything below it is shown to the author as notes.
+The marker is parsed by a script. Emit it exactly once, alone on its line, with no
+bullet, quotes or backticks around it, even when you changed nothing. Everything
+above it is returned as copy; everything below it is shown to the author as notes.
 
 TEXT TO EDIT:

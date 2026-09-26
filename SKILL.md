@@ -1,104 +1,128 @@
 ---
 name: slopmonster
-description: Turn AI-written copy into copy a human would ship. Lint for AI tells, rewrite, cleanse with a rival model, lint again. Trigger on /slopmonster, "humanize this", "de-slop this", "does this sound like AI", "fix this copy".
+description: Review writing for its intended reader, check common AI writing patterns, revise, request a second pass from a different model family, and check again. Trigger on /slopmonster, "humanize this", "de-slop this", "does this sound like AI", "fix this copy".
 ---
 
 # SlopMonster
 
-Take any draft and make it read like a person wrote it. A landing page, a README, an
-email, a script. The target is not "passes a detector". Detectors are noise, and chasing them makes prose
-worse. The target is the gut of a reader who has seen a thousand AI paragraphs this month.
+Edit the supplied draft for its audience and purpose. The workflow supports
+READMEs, landing pages, emails and scripts. Use the checker to locate known
+patterns, then review the writing in context. A score of 5/5 means no scored
+patterns matched; it does not establish that the copy is clear or accurate.
 
-The loop is always the same four steps, and the linter gets the first and last word,
-because the linter is honest and the model is persuasive.
+## Step 1: Establish the context and run the checker
 
-```
-1. LINT      python3 tools/deslop.py --text "…"      score /5, exits red below 5
-2. REWRITE   three passes, by hand or by model       (see below)
-3. CLEANSE   a DIFFERENT model family strips tells   tools/cleanse.sh
-4. RE-LINT   python3 tools/deslop.py again           ship only at 5/5
-```
+Identify the reader, the format and what the reader needs from the text. Use the
+user's brief and the draft itself. Ask a focused question only when missing context
+would materially change the edit.
 
-## Step 1 — Lint
+A README should explain what the project does, how to use it and its limitations.
+A sales page may need an opening that establishes a problem. An email may need to
+start with the request. Choose an approach that fits the document.
 
 ```bash
-python3 tools/deslop.py page.html              # a built page (scores visible text only)
-python3 tools/deslop.py page.html --view hero  # one element by id
+python3 tools/deslop.py draft.md
+python3 tools/deslop.py page.html
+python3 tools/deslop.py page.html --view view-site
 python3 tools/deslop.py --text "paste a draft"
-python3 tools/deslop.py page.html --allow-proof  # numbers are real and evidenced
 ```
 
-Regex, no opinions. Five groups, one point each: AI vocabulary, AI constructions,
-punctuation cadence, rule-of-three rhythm, invented proof. Below 5/5 it exits non-zero, so
-it works as a build gate. "Mostly clean" is how a page ends up sounding like every other
-AI page on the internet.
+The checker scores five categories: vocabulary, sentence patterns, punctuation,
+three-item lists and possible unsupported proof. Each category with a match costs
+one point. Below 5/5 it exits with status 1. Empty input also fails.
 
-Empty input fails rather than passing. A cleanse that times out leaves a zero-byte file,
-and a gate that stamps that CLEAN reports slop as clean exactly when the pipeline broke.
+For Markdown, use the file path so code and quoted specimens are handled as
+Markdown. The rules are English only and do not detect the input language.
 
-Touching a regex means running `python3 tools/test_deslop.py`. The catalogue is matched by
-word root, and the obvious stemming shortcut silently kills a dozen base words.
+## Step 2: Review and rewrite
 
-## Step 2 — Rewrite (three passes)
+Read [references/principles.md](references/principles.md) for the editorial checks
+and [references/signs-of-ai-writing.md](references/signs-of-ai-writing.md) for the
+pattern catalogue.
 
-Full catalogue in `references/signs-of-ai-writing.md`. The short version:
+Work through the draft in this order:
 
-1. **Kill the vocabulary.** `delve`, `seamless`, `robust`, `unlock`, `elevate`,
-   `leverage`, `game-changing`, `journey`, `realm`… Replace with a plainer word, not a
-   synonym of the same word.
-2. **Kill the shapes.** `not just X, but Y` is the single loudest tell in English right
-   now. Also the `rule-of-three` reflex, `em-dash` pile-ups, hedge stacks, symmetrical
-   paragraphs, the closing summary nobody asked for, and a bold lead on every bullet.
-3. **Put a person back in.** Removing tells leaves clean, dead copy. One specific number
-   per claim. Sentence lengths that vary hard. One thing a cautious writer would have cut.
-   One rough edge — a contraction, a fragment, a sentence starting with "And".
+1. **Purpose and structure.** Answer the reader's first question early. Remove
+   duplicate hooks and curiosity gaps that delay an explanation. Keep each
+   paragraph focused on a useful point, with enough context to understand it.
+2. **Meaning and evidence.** Check that each sentence adds information and follows
+   from what came before. Explain conditions on claims. Remove empty contrasts,
+   repeated metaphors and comparisons that do not help the reader. Preserve
+   facts, technical behavior and the author's position.
+3. **Wording and rhythm.** Review the checker findings and replace vague language
+   with direct wording. Read adjacent sentences together for repetitive shapes.
+   Let sentence length follow the thought. Keep useful lists and punctuation.
 
-## Step 3 — Cleanse with a rival model
+Do not manufacture personality by adding an opinion, a mistake, a fragment or a
+fixed quota of short sentences. Do not add a number to every claim. Use only facts
+supplied by the author or verified from an appropriate source.
 
-A model is bad at hearing its own accent. A rival model hears it instantly. So the cleanse
-runs on a **different model family** than the one that wrote the draft:
+The checker can flag valid language. Review the actual match before editing it.
+Never hide ordinary prose in code formatting to raise the score. If a necessary
+phrase still triggers a rule, explain the remaining finding to the user.
 
-| You are working in | The draft's accent | Cleanse with |
-|---|---|---|
-| Claude Code / Claude | Anthropic | GPT-5.6 via the codex CLI — `tools/cleanse.sh` does this |
-| Codex / ChatGPT | OpenAI | Claude via `claude -p`, or set `DESLOP_WRITER=gpt` for `cleanse.sh` |
-| Gemini CLI | Google | Either CLI; `cleanse.sh` picks whichever is installed |
-| No CLI at all | — | `cleanse.sh` prints the prompt; paste it into the other family's chat |
+## Step 3: Request a second editing pass
+
+Use a different model family from the one that wrote the draft. This provides a
+second review with the same audience and purpose; inspect its suggestions before
+accepting them.
+
+| Draft written with | Command |
+|---|---|
+| Claude | `DESLOP_WRITER=claude tools/cleanse.sh draft.md > cleansed.md` |
+| GPT / Codex / ChatGPT | `DESLOP_WRITER=gpt tools/cleanse.sh draft.md > cleansed.md` |
+| Gemini | Use either command to select an installed rival CLI. |
+
+The script uses the selected CLI's configured model and
+[prompts/cleanse.txt](prompts/cleanse.txt). The CLI must be installed and
+authenticated. If it is unavailable, use the prompt and draft in the other model
+family's chat. If a second model cannot be accessed, report that the pass was not
+completed and continue the editorial review and local checks.
+
+Standard output contains the edited copy. Standard error contains change notes.
+To keep both:
 
 ```bash
-tools/cleanse.sh draft.md > cleansed.md                 # copy out, notes on stderr
-tools/cleanse.sh draft.md > cleansed.md 2> notes.txt    # keep the notes as well
+DESLOP_WRITER=gpt tools/cleanse.sh draft.md > cleansed.md 2> notes.txt
 ```
 
-The instruction it carries (`prompts/cleanse.txt`): strip the tells, keep every fact,
-keep the length within 10%, invent nothing.
+Check the command's exit status. A timeout returns 124. A missing rival CLI returns
+127 and prints the prompt and input as standard output; that output is not an
+edited draft. Other CLI failures also need to be resolved before using the file.
 
-It returns **two things**. The rewritten copy, then a `<<<SLOPMONSTER-NOTES>>>` line, then up
-to five bullets naming each tell and its fix. The script splits them, so **stdout is copy and
-stderr is notes**, and the redirect above writes prose only.
+The model separates its notes with `<<<SLOPMONSTER-NOTES>>>`. A warning about a
+missing marker means notes may have been included in the copy. Inspect the result.
 
-Read the notes. PASS 2 tells the model to stop at the last real point, so it will sometimes
-delete your closing line, and the notes are the only place it says so.
+## Step 4: Compare the edit and check again
 
-`WARNING no <<<SLOPMONSTER-NOTES>>> line` means the model ignored the format and the whole
-reply came through as copy. Check the tail before you ship.
+Compare the result with the source. Check facts and commands for changes, confirm
+that links and placeholders survived, and read the opening in context. Review the
+notes for deletions that may have removed necessary information.
 
-## Step 4 — Re-lint
+```bash
+python3 tools/deslop.py cleansed.md
+```
 
-Always. A frontier model is very good at removing tells and quite capable of adding new
-ones while it does. An unlinted cleanse is a coin flip.
+Aim to resolve the checker findings while preserving the intended meaning. Report
+any justified exceptions. The final editorial review is required even at 5/5.
 
-## The one hard rule
+If you change a regex, run `python3 tools/test_deslop.py`. If you change the cleanse
+script, run `bash tools/test_cleanse.sh`.
 
-**Never invent proof.** No user counts, no testimonials, no ratings, no `trusted by
-10,000 teams` unless every one is true and you can show it. If a claim needs a number you
-do not have, write `[needs number]` and move on. The linter flags number-plus-noun
-patterns on purpose: a false positive costs ten seconds, a false negative is a claim you
-cannot back. Specificity beats borrowed credibility anyway.
+## Factual claims
 
-## Output format
+Never invent evidence. This includes customer counts, testimonials, ratings and
+results. If the draft needs missing information, flag it for the author with a
+placeholder such as `[needs number]`. Do not publish an unresolved placeholder as
+a verified claim.
 
-Return the rewritten copy first, in full. Then a short `▎ what changed` list — at most
-five lines, each naming the tell and the fix. Never return analysis alone. Keep the
-author's meaning exactly: de-slopping is not rewriting the argument. Match the register
-you were given.
+The proof rule only sees number-and-noun patterns. It cannot verify whether a claim
+is true. Use `--allow-proof` only after checking the evidence; the option retains
+the warning while removing its score penalty.
+
+## Output
+
+Return the rewritten copy or save the edited artifact as requested. Then give up
+to five short notes explaining substantive changes and the check results. State
+whether the second model pass completed. Keep any unresolved claims or remaining
+checker findings visible. Do not claim the edit proves human authorship.
