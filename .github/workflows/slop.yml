@@ -21,6 +21,9 @@ jobs:
       - name: Cleanse split tests
         run: bash tools/test_cleanse.sh
 
+      - name: Lint the README
+        run: python3 tools/deslop.py README.md
+
       # This is the gate itself, copied as-is into your own repo: point it at
       # whatever file holds your shipped copy. Non-zero below 5/5 fails the build.
       - name: Lint the shipped copy

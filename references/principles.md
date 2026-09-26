@@ -1,58 +1,86 @@
-# Five principles
+# Editing principles
 
-The rewrite half of the system. De-slopping removes what is wrong; these decide what the
-line should say instead. Each one carries a real before/after from the Ridgeline Roofing
-build (`examples/ridgeline-roofing.md` has the full set).
+Use these checks alongside the pattern catalogue. Start with the document's
+reader and purpose, then review individual sentences. A passing checker score
+does not answer the editorial questions below.
 
-## 1 · Don't make me think
-*Steve Krug, "Don't Make Me Think", 2000.*
-The reader decides in seconds whether this page is for them. Every line they have to
-decode is a line they skip.
+## 1. Give the reader the information they need
 
-> **Before:** Premium materials that hold against the years
-> **After:** A roof is seven layers. Most quotes only price two.
+Identify what the reader came to learn or do. In a README, explain the project's
+function before discussing optional integrations. In an email, state the reason
+for writing early. A sales page may need to establish a customer problem before
+describing the offer.
 
-## 2 · Name the pain first
-*Daniel Priestley's pitch order: open on the problem and the insight, not the product.
-Alex Hormozi makes the same argument from the offer side — the reader buys relief from a
-named problem, not a product description.*
-Nobody buys a solution to a problem they haven't admitted. Every customer also has a
-specific fear; naming it is worth more than any reassurance, because reassurance is what
-the people who burned them also offered.
+Steve Krug's *Don't Make Me Think* informs the emphasis on reducing unnecessary
+interpretation. Problem-first pitch guidance from Daniel Priestley and Alex
+Hormozi is useful for sales copy; it should not dictate every document's opening.
 
-> **Before:** Get a free, no-obligation quote today
-> **After:** You get a written scope and a fixed number before anyone climbs a ladder.
+> Before: ~~It scores your copy out of 5 and it can fail your build.~~
+>
+> After: The checker reports matches in five categories. You can also run it in
+> an automated repository check, where a score below 5/5 returns a failure status.
 
-## 3 · Specific or silent
-A vague benefit is worse than no benefit. Credibility comes from claiming something
-checkable, not from claiming more. The more precise the claim, the less it needs a
-superlative propping it up. And a refusal positions better than a promise — anyone can
-promise quality, almost nobody publishes the work they turn down.
+The second sentence supplies the context needed to understand the optional use.
+Whether that failure blocks a merge or deployment depends on the configuration.
 
-> **Before:** Committed to the highest standards of workmanship
-> **After:** We do not do overlays. If the roof needs replacing, it gets stripped.
+## 2. Make the opening lead into an explanation
 
-## 4 · One ask per screen
-Two CTAs is zero CTAs. One action per screen, and the button says what it does —
-"Book a free inspection", not "Get started".
+A hook should establish a relevant question or reason to read. Once it has done
+that, answer the question. Avoid following it with another vague promise about
+information that appears later.
 
-> **Before:** Button
-> **After:** Book a free inspection
+Read the first few paragraphs together. Check whether the reader learns something
+useful in each one. Remove openings that could introduce almost any product.
 
-## 5 · Under five minutes
-The whole page should read in less time than the product takes to try. Teach something on
-the way past: a page that explains how the thing works earns trust that a page of claims
-cannot buy, and it arms the reader to spot a bad competitor — a favour they remember.
+> Before: ~~Most tools that fix this are built on the same public research. This
+> one adds the two things the others skip.~~
+>
+> After: SlopMonster includes a Python checker and instructions for editing the
+> draft with an AI agent.
 
-> **Before:** We use only the best underlayment available
-> **After:** Full coverage, not the 15lb felt strip that shows up on cheap quotes.
+The replacement explains the contents without making an unsupported comparison
+with other tools.
 
----
+## 3. Check the relationship between sentences
 
-## The rule above all five
+Each sentence should add information, explain a consequence or provide an example
+the reader needs. Repeated metaphors and mirrored sentence structures can create
+rhythm without developing the point.
 
-**Never invent proof.** No customer counts, no testimonials, no ratings the business has
-not earned. Where a build needs a proof slot it does not have, say so on the page:
+Read adjacent sentences for meaning. Ask what the second sentence adds and whether
+its claim follows from the first. Use a contrast only when the distinction matters.
 
-> **Before:** ~~Loved by 10,000+ happy homeowners~~
-> **After:** Project names and photography are placeholders — swap in your own jobs before this goes live.
+> Before: ~~Developers call this a linter. Everyone else can call it a checker
+> that will not let you ship.~~
+>
+> After: Run the checker on a file to see which patterns it flags. The command
+> leaves the file unchanged.
+
+The replacement describes what someone using the command can expect.
+
+## 4. Keep claims within the available evidence
+
+Use a specific detail when it is relevant and supported. Do not add a number or
+testimonial merely to make a sentence feel concrete. Verify dates and technical
+specifications as carefully as customer counts.
+
+The roofing examples in [the worked example](../examples/ridgeline-roofing.md)
+illustrate possible edits. A reader reusing them must check the underlying business
+facts. A precise claim can still be false.
+
+If necessary evidence is missing, mark the gap for the author. Describe limitations
+and conditions where the claim appears so the reader can interpret it correctly.
+
+## 5. Preserve a voice that suits the document
+
+Read the edit aloud or as a complete page. Keep the author's level of formality and
+allow sentence length to follow the content. Lists can have three items when there
+are three useful items. An em dash can be appropriate punctuation.
+
+Avoid imposing a quota of fragments or contractions. Do not invent an opinion or
+deliberate error to make the writing seem personal. For instructions, prioritize
+an order the reader can follow and commands they can use.
+
+After editing, compare against the original for changed meaning and run the
+checker again. Review remaining findings in context and report any necessary
+exceptions. Never put ordinary prose in code formatting merely to suppress a match.

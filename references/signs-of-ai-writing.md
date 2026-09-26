@@ -1,21 +1,21 @@
 # Signs of AI writing — the catalogue
 
-Slop is the sound of an unwritten rule. A model asked to "write good copy" writes the
-average of everything it has read, and that average has a very recognisable accent.
+This catalogue lists patterns to review while editing. It draws on Wikipedia's
+*Signs of AI writing*, maintained by WikiProject AI Cleanup, and the projects in
+[sources.md](sources.md). These patterns can also appear in human writing.
 
-The canonical source is **Wikipedia's "Signs of AI writing"**, maintained by WikiProject
-AI Cleanup (`en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing`) — the closest thing to
-a peer-reviewed catalogue of the tells, updated continuously by people who clean this up
-for a living. Everything below is organised into five groups, because the fix differs per
-group. These five groups are exactly what `tools/deslop.py` scores.
+The five groups correspond to the checker's scoring categories, but some advice
+requires editorial judgment and has no regex check. Read the findings in context.
+The complete automated rules are in `tools/deslop.py`.
 
 ---
 
 ## 1 · Vocabulary
 
-Words a model reaches for because they are the safest available token. Humans mostly do not.
+Review these words for vague or promotional use. Keep necessary technical terms
+and literal meanings when they fit the document, and report any remaining match.
 
-**Tier 1, delete on sight:**
+**Words and phrases to review:**
 `delve` · `tapestry` · `testament to` · `underscores` · `seamless(ly)` · `robust` ·
 `navigate the landscape` · `in today's fast-paced world` · `it's important to note` ·
 `it's worth noting` · `that being said` · `at the end of the day` · `unlock` ·
@@ -23,20 +23,18 @@ Words a model reaches for because they are the safest available token. Humans mo
 `dive deep` · `myriad` · `plethora` · `realm` · `ever-evolving` · `cutting-edge` ·
 `transformative` · `paradigm shift` · `synergy` · `holistic` · `embark`
 
-**Tier 2, fine once and damning in every section:**
+**Additional words to review in context:**
 `leverage` · `foster` · `crucial` · `pivotal` · `streamline` · `empower` · `showcase` ·
 `curated` · `meticulous` · `compelling` · `innovative` · `comprehensive` · `journey` ·
 `solution` · `effortless` · `intuitive` · `world-class` · `best-in-class` · `unleash` · `boost`
 
-On a marketing site the second tier does more damage than the first, because `streamline
-your workflow` is the exact sentence every competitor also shipped.
-
-The fix is a **plainer word, not a synonym**. `leverage` does not become `utilise`.
-It becomes `use`.
+The checker does not apply frequency allowances to these editorial lists. Its
+implemented vocabulary patterns flag even a single match. Replace vague wording
+with an explanation of what happens. Often a plain word such as `use` is enough.
 
 ## 2 · Constructions (the shapes)
 
-Louder than any single word, because they are shapes rather than vocabulary:
+Review sentence structures as well as individual words:
 
 | Shape | Example | Fix |
 |---|---|---|
@@ -46,52 +44,46 @@ Louder than any single word, because they are shapes rather than vocabulary:
 | `that's where X comes in` | `That's where Acme comes in` | State what X does |
 | `say goodbye to` | `Say goodbye to guesswork` | Name what replaces it |
 | `imagine a…` | `Imagine a world where…` | Show it instead |
-| hedged benefit | `helps you to`, `can help you` | One verb, committed |
-| stacked hedging | `may potentially`, `could possibly` | One hedge maximum, ideally zero |
+| hedged benefit | `helps you to`, `can help you` | Describe the benefit at the certainty the evidence supports |
+| stacked hedging | `may potentially`, `could possibly` | Remove redundant hedges while preserving uncertainty |
 | self-answering question | `The result? Faster shipping.` | A sentence |
 
-**`It's not just X, it's Y` is the single loudest tell in English right now.** If you
-fix one thing, fix that.
+Also review adjacent sentences that repeat a metaphor, manufacture a contrast
+between audiences or introduce a second hook before explaining the first.
+These broader problems require reading the paragraph in context.
 
-Also in this group: the closing summary nobody asked for (`In conclusion…`), process
-bleed (`I've analysed your requirements and structured the following…`), bold-lead
-bullets on every item, and symmetrical paragraphs — every paragraph three sentences,
-every sentence fifteen words. Humans write a nine-word paragraph and then a forty-word one.
+Remove unnecessary process commentary and repeated summaries. Use formatting to
+help the reader scan. Let paragraph and sentence length follow the material.
 
 ## 3 · Punctuation cadence
 
-- Two or more em-dashes inside one sentence. Models run em-dashes at roughly 3–5× a
-  human rate (harshaneel/humanize's research finding). The clause after a dash must add
-  new information, or it is two sentences pretending to be one.
-- Semicolons in web copy. Almost always the wrong register.
-- A caveat appended to every claim.
+- Repeated em dashes within a sentence. Check whether the interruptions make it
+  harder to follow. The checker uses 220-character windows.
+- Stacked hyphenated compounds. The checker flags four within one sentence window.
+- Semicolon density. The checker uses a threshold that scales with text length.
+
+Punctuation can be appropriate even when it triggers a pattern. Review readability
+and retain qualifications needed for accuracy.
 
 ## 4 · Rhythm
 
-The rule-of-three reflex: `faster, smarter, and better`. One tricolon is rhetoric.
-Three on a page is a machine. Real writers use two items, or four, or one.
+The checker recognizes two three-item list patterns, including
+`faster, smarter, and better`. Review whether each item contributes information.
+Keep a useful list at its natural length. A list's item count cannot establish
+who wrote it.
 
 ## 5 · Invented proof
 
-Numbers, users, testimonials or ratings the product has not earned. The one group with a
-real cost attached: it is the single unrecoverable mistake, and the lift it buys is
-smaller than the specificity you could have written instead. If the product has not
-launched, the copy says so. "Five minutes of real problems, marked the second you answer"
-beats any fabricated number, and it has the advantage of being true.
+Never invent customer counts or other evidence. The checker flags numbers near
+certain nouns, but it cannot determine whether the claim is supported. Verify the
+claim before using `--allow-proof`, which keeps the warning and removes its score
+penalty. Check dates and specifications too, even when no rule flags them.
 
 ---
 
-## After the tells are gone
+## Review the complete draft
 
-Removing tells leaves clean, dead copy. Put a person back in:
-
-- **One specific number, name or date per claim.** "Faster" is nothing. "Four minutes
-  instead of forty" is a sentence a human wrote because they timed it.
-- **Vary sentence length hard.** Land a three-word sentence after a long one. Rhythm is
-  the fastest human signal there is.
-- **Say one thing a model would not risk.** An opinion, a preference, a thing that
-  failed. Safety is the texture of AI writing.
-- **Use the reader's actual words.** Mine reviews, tickets, comments. Nobody says
-  `streamline your workflow` out loud.
-- **Keep one rough edge.** A contraction, a fragment, a sentence starting with "And".
-  One rough edge is texture. Five is sloppy.
+Use [principles.md](principles.md) to check the audience and purpose, the opening,
+the progression between sentences, the evidence and the author's voice. Removing
+recognized patterns is only part of the edit. Do not force fragments or opinions
+into the draft to make it seem personal.
